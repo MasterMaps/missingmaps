@@ -127,7 +127,6 @@ function select(id: number | null) {
   history.replaceState(null, '', url)
 
   map.filterToProject(current?.id ?? null)
-  map.showMarkers(!current)
   renderInfo(current)
 
   if (current) frame(current)

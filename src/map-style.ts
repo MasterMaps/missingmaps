@@ -36,14 +36,20 @@ export function highlightLayers(tilesUrl: string): {
         'source-layer': 'tasks',
         paint: {
           'fill-color': colours.square,
-          // Squares with more of our work in them read as more solid.
+          // Squares with more of our work in them read as more solid. The
+          // counts are steeply skewed — median 8, p90 48, one square at 423 —
+          // so the ramp is on the square root and saturates near p95. A linear
+          // 0-400 ramp put 99% of squares in the bottom third, which read as
+          // random darkness rather than as a scale.
           'fill-opacity': [
             'interpolate',
             ['linear'],
-            ['coalesce', ['get', 'edits'], 0],
-            0, 0.04,
-            50, 0.1,
-            400, 0.18,
+            ['sqrt', ['coalesce', ['get', 'edits'], 0]],
+            1, 0.05,
+            3, 0.11,
+            5, 0.16,
+            8, 0.23,
+            12, 0.3,
           ],
         },
       },

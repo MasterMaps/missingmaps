@@ -115,15 +115,6 @@ export class HighlightMap {
     })
   }
 
-  /** The dots are an overview device; they only get in the way inside a project. */
-  showMarkers(visible: boolean) {
-    for (const layer of ['project-dot', 'project-dot-label']) {
-      if (this.map.getLayer(layer)) {
-        this.map.setLayoutProperty(layer, 'visibility', visible ? 'visible' : 'none')
-      }
-    }
-  }
-
   /** Pulls back to the whole globe rather than fitting a world-sized bbox. */
   showWorld() {
     this.map.easeTo({ center: [12, 8], zoom: 1.5, duration: 900 })
