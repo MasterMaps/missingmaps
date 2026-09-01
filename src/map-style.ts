@@ -151,7 +151,9 @@ export const markerLayers = (): LayerSpecification[] => [
     id: 'project-dot',
     type: 'circle',
     source: MARKERS_SOURCE,
-    maxzoom: 8,
+    // One level further out than the features they stand in for, so the
+    // handover to the real geometry happens sooner.
+    maxzoom: 7,
     paint: {
       'circle-color': colours.building,
       'circle-opacity': 0.8,
@@ -166,8 +168,8 @@ export const markerLayers = (): LayerSpecification[] => [
     id: 'project-dot-label',
     type: 'symbol',
     source: MARKERS_SOURCE,
-    minzoom: 3,
-    maxzoom: 8,
+    minzoom: 2,
+    maxzoom: 7,
     layout: {
       'text-field': ['get', 'label'],
       'text-font': ['Noto Sans Regular'],
