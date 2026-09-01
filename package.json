@@ -1,0 +1,23 @@
+{
+  "name": "missingmaps-iug",
+  "version": "1.0.0",
+  "description": "Before/after maps for the HOT Tasking Manager projects mapped under #iugnorge",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "ingest": "node scripts/ingest.mjs",
+    "ingest:all": "node scripts/ingest.mjs all"
+  },
+  "dependencies": {
+    "maplibre-gl": "^6.6.0"
+  },
+  "devDependencies": {
+    "@types/geojson": "^7946.0.16",
+    "@types/node": "^26.4.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2"
+  }
+}

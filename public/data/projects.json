@@ -1,0 +1,906 @@
+{
+  "hashtag": "iugnorge",
+  "generated": "2026-09-01T19:14:27.710Z",
+  "lastSequence": 7166785,
+  "mappers": [
+    "Heidi Bergfald",
+    "mnsbdy",
+    "vegardvb",
+    "Nya99",
+    "Mianordy",
+    "MasterMaps",
+    "Arve Borseth",
+    "susannanw",
+    "Anne Marie Grüner",
+    "anntor14",
+    "karl_ove",
+    "FramtIda",
+    "HVaadal"
+  ],
+  "projects": [
+    {
+      "id": 63366,
+      "source": "changesets",
+      "changesets": [
+        188371741,
+        188372081,
+        188372424,
+        188372938,
+        188372886,
+        188372921,
+        188373154,
+        188373190,
+        188373271,
+        188373289,
+        188373514,
+        188373613,
+        188373710,
+        188373945,
+        188374202,
+        188374089,
+        188374128,
+        188374269,
+        188374272,
+        188374291,
+        188374307,
+        188374509,
+        188374372,
+        188374722,
+        188374611,
+        188374629,
+        188374837,
+        188374838,
+        188374852,
+        188374933,
+        188375317,
+        188375581,
+        188375454,
+        188376193,
+        188376106,
+        188376447,
+        188376639,
+        188376642,
+        188376650,
+        188376819,
+        188376729,
+        188376738,
+        188376762,
+        188376766,
+        188376893,
+        188377029,
+        188377298,
+        188377096,
+        188377099,
+        188377151,
+        188377177,
+        188377191,
+        188377228,
+        188377245,
+        188377285,
+        188377429,
+        188377469,
+        188377514,
+        188377550,
+        188377564,
+        188377571,
+        188377574,
+        188377592,
+        188377597,
+        188377829,
+        188377860,
+        188377736,
+        188377780,
+        188378222,
+        188378123,
+        188378142,
+        188378262,
+        188378273,
+        188378310,
+        188378559,
+        188378663,
+        188378962,
+        188379418,
+        188379318
+      ],
+      "mappers": [
+        "Heidi Bergfald",
+        "mnsbdy",
+        "vegardvb",
+        "Nya99",
+        "Mianordy",
+        "MasterMaps",
+        "Arve Borseth",
+        "susannanw",
+        "Anne Marie Grüner",
+        "anntor14",
+        "karl_ove",
+        "FramtIda",
+        "HVaadal"
+      ],
+      "firstEdit": "2026-09-01T15:27:41Z",
+      "lastEdit": "2026-09-01T17:25:29Z",
+      "editPoints": [
+        [
+          120.4123,
+          -8.6086
+        ],
+        [
+          120.4132,
+          -8.6091
+        ],
+        [
+          120.4435,
+          -8.6264
+        ],
+        [
+          120.3599,
+          -8.7433
+        ],
+        [
+          120.3942,
+          -8.6056
+        ],
+        [
+          120.4425,
+          -8.6262
+        ],
+        [
+          120.4434,
+          -8.6295
+        ],
+        [
+          120.3652,
+          -8.4105
+        ],
+        [
+          120.3272,
+          -8.4885
+        ],
+        [
+          120.4138,
+          -8.6084
+        ],
+        [
+          120.3654,
+          -8.4108
+        ],
+        [
+          120.4411,
+          -8.6291
+        ],
+        [
+          120.3653,
+          -8.41
+        ],
+        [
+          120.3275,
+          -8.4879
+        ],
+        [
+          120.4139,
+          -8.6078
+        ],
+        [
+          120.3957,
+          -8.6083
+        ],
+        [
+          120.3623,
+          -8.7384
+        ],
+        [
+          120.3844,
+          -8.624
+        ],
+        [
+          120.3537,
+          -8.5523
+        ],
+        [
+          120.3704,
+          -8.4057
+        ],
+        [
+          120.441,
+          -8.627
+        ],
+        [
+          120.3741,
+          -8.3913
+        ],
+        [
+          120.3657,
+          -8.3999
+        ],
+        [
+          120.3603,
+          -8.7435
+        ],
+        [
+          120.3651,
+          -8.4002
+        ],
+        [
+          120.4411,
+          -8.6264
+        ],
+        [
+          120.445,
+          -8.6036
+        ],
+        [
+          120.4138,
+          -8.6076
+        ],
+        [
+          120.3532,
+          -8.5492
+        ],
+        [
+          120.3748,
+          -8.381
+        ],
+        [
+          120.3503,
+          -8.4982
+        ],
+        [
+          120.3604,
+          -8.7433
+        ],
+        [
+          120.4456,
+          -8.6038
+        ],
+        [
+          120.4173,
+          -8.6093
+        ],
+        [
+          120.3751,
+          -8.3815
+        ],
+        [
+          120.3895,
+          -8.3886
+        ],
+        [
+          120.4216,
+          -8.6128
+        ],
+        [
+          120.3506,
+          -8.4989
+        ],
+        [
+          120.3898,
+          -8.3888
+        ],
+        [
+          120.3908,
+          -8.6219
+        ],
+        [
+          120.3601,
+          -8.3978
+        ],
+        [
+          120.4127,
+          -8.6087
+        ],
+        [
+          120.3912,
+          -8.3901
+        ],
+        [
+          120.4116,
+          -8.6092
+        ],
+        [
+          120.3883,
+          -8.5263
+        ],
+        [
+          120.3312,
+          -8.8154
+        ],
+        [
+          120.3977,
+          -8.6986
+        ],
+        [
+          120.3215,
+          -8.8262
+        ],
+        [
+          120.412,
+          -8.6086
+        ],
+        [
+          120.3257,
+          -8.4717
+        ],
+        [
+          120.4541,
+          -8.6054
+        ],
+        [
+          120.319,
+          -8.8266
+        ],
+        [
+          120.3888,
+          -8.5264
+        ],
+        [
+          120.3601,
+          -8.3996
+        ],
+        [
+          120.3318,
+          -8.8191
+        ],
+        [
+          120.3287,
+          -8.6054
+        ],
+        [
+          120.4125,
+          -8.6097
+        ],
+        [
+          120.4544,
+          -8.605
+        ],
+        [
+          120.3264,
+          -8.4729
+        ],
+        [
+          120.3889,
+          -8.526
+        ],
+        [
+          120.3627,
+          -8.7437
+        ],
+        [
+          120.3244,
+          -8.8127
+        ],
+        [
+          120.4107,
+          -8.6091
+        ],
+        [
+          120.3284,
+          -8.6051
+        ],
+        [
+          120.4104,
+          -8.6087
+        ],
+        [
+          120.3273,
+          -8.4724
+        ],
+        [
+          120.3421,
+          -8.8206
+        ],
+        [
+          120.3882,
+          -8.5257
+        ],
+        [
+          120.3643,
+          -8.7572
+        ],
+        [
+          120.3949,
+          -8.6591
+        ],
+        [
+          120.3594,
+          -8.4006
+        ],
+        [
+          120.3267,
+          -8.4716
+        ],
+        [
+          120.3861,
+          -8.7288
+        ],
+        [
+          120.4026,
+          -8.437
+        ],
+        [
+          120.3267,
+          -8.4718
+        ],
+        [
+          120.3323,
+          -8.4808
+        ],
+        [
+          120.328,
+          -8.4735
+        ],
+        [
+          120.3273,
+          -8.4747
+        ]
+      ],
+      "editBbox": [
+        120.3186955,
+        -8.827379,
+        120.4554935,
+        -8.380294
+      ],
+      "name": "Earthquake Response 2026 - East Nusa Tenggara, Indonesia 6",
+      "shortDescription": "Mapping Settlements for NTT Earthquake Response On 15 August 2026, a M7.7 earthquake struck offshore near Mbay, Nagekeo, East Nusa Tenggara (NTT), Indonesia, at a shallow depth of 15 km. As of BNPB's latest update (16 August, 16:00 WIB), the disaster has caused 53+ deaths, 135+ injured, and 5,000+ displaced across Manggarai, Manggarai Timur, Sikka, Ende, Manggarai Barat, and Nagekeo — figures stil",
+      "bbox": [
+        120.293427,
+        -8.897283,
+        120.456848,
+        -8.246828
+      ],
+      "centre": [
+        120.3751375,
+        -8.572055500000001
+      ],
+      "created": "2026-08-31T07:39:16.254000Z",
+      "status": "PUBLISHED",
+      "countries": [
+        "Indonesia"
+      ],
+      "organisation": "Open Mapping Hub Asia-Pacific",
+      "campaigns": [
+        "2026 Indonesia Earthquake Response"
+      ],
+      "mappingTypes": [
+        "BUILDINGS"
+      ],
+      "percentMapped": 25,
+      "percentValidated": 0,
+      "changesetComment": "#hotosm-project-63366 #FloresEQ mapped buildings within earthquake-affected areas",
+      "metadataAt": "2026-09-01T17:25:29Z",
+      "tmCentroid": [
+        120.377522,
+        -8.627815
+      ]
+    },
+    {
+      "id": 49638,
+      "source": "tm-touched",
+      "changesets": [],
+      "mappers": [
+        "Heidi Bergfald"
+      ],
+      "tmCentroid": [
+        4.186183,
+        7.361689
+      ],
+      "name": "Mapping Ikire for Resilience and Smart City Development - (OAU)",
+      "shortDescription": "Adding missing buildings to OSM is crucial for improving both the accuracy and usefulness of the map. By including these buildings, users can better navigate their surroundings, easily locate homes, businesses, and services. Additionally, accurate building data supports emergency response and humanitarian efforts, enabling teams to plan, coordinate, and execute rescue operations more efficiently i",
+      "bbox": [
+        4.145533,
+        7.322878,
+        4.22773,
+        7.404512
+      ],
+      "centre": [
+        4.186631500000001,
+        7.363695
+      ],
+      "created": "2026-04-28T20:37:25.456000Z",
+      "status": "PUBLISHED",
+      "countries": [
+        "Nigeria"
+      ],
+      "organisation": "TomTom",
+      "campaigns": [],
+      "mappingTypes": [
+        "BUILDINGS",
+        "ROADS"
+      ],
+      "percentMapped": 100,
+      "percentValidated": 18,
+      "changesetComment": "#hotosm-project-49638 #AfricaMapCup2026 #tt_event #youthmappersoau"
+    },
+    {
+      "id": 43962,
+      "source": "tm-touched",
+      "changesets": [],
+      "mappers": [
+        "Heidi Bergfald",
+        "Mianordy",
+        "karl_ove",
+        "HVaadal"
+      ],
+      "tmCentroid": [
+        -0.328168,
+        5.682878
+      ],
+      "name": "Mapping Doblogonno for Resilience and Smart City Development",
+      "shortDescription": "Doblo Gono is a coastal community located within the Greater Accra Region of Ghana, situated along the Accra–Winneba corridor and within the Ga South Municipal area. Like many peri-urban settlements on the western fringes of Accra, Doblo Gono is experiencing gradual spatial expansion driven by residential development, informal commerce, and proximity to the metropolitan core. The community is char",
+      "bbox": [
+        -0.367123,
+        5.653268,
+        -0.28751,
+        5.711104
+      ],
+      "centre": [
+        -0.3273165,
+        5.682186
+      ],
+      "created": "2026-02-24T20:22:21.195000Z",
+      "status": "ARCHIVED",
+      "countries": [
+        "Ghana"
+      ],
+      "organisation": "OSM Ghana",
+      "campaigns": [],
+      "mappingTypes": [
+        "ROADS",
+        "BUILDINGS"
+      ],
+      "percentMapped": 100,
+      "percentValidated": 100,
+      "changesetComment": "#hotosm-project-43962 #tt_event #osmghana #youthmappers #AfricaMapCup2026 Buildings and Roads mapping"
+    },
+    {
+      "id": 37395,
+      "source": "tm-touched",
+      "changesets": [],
+      "mappers": [
+        "HVaadal"
+      ],
+      "tmCentroid": [
+        100.4256,
+        -0.680716
+      ],
+      "name": "Building Mapping: West Sumatera, Sumatera Disaster Response",
+      "shortDescription": "The National Disaster Management Agency (BNPB) has updated the number of victims affected by flash floods and landslides in Aceh, West Sumatra, and North Sumatra. The latest data shows that 836 people have reportedly died. \"As of 4:00 p.m. WIB (Western Indonesian Time), I report that as of this afternoon, the death toll has increased to 836,\" said Abdul Muhari, Head of the BNPB Disaster Data, Info",
+      "bbox": [
+        99.34,
+        -2.44,
+        101.4,
+        0.74
+      ],
+      "centre": [
+        100.37,
+        -0.85
+      ],
+      "created": "2025-12-04T22:18:13.015000Z",
+      "status": "ARCHIVED",
+      "countries": [
+        "Indonesia"
+      ],
+      "organisation": "Perkumpulan OpenStreetMap Indonesia",
+      "campaigns": [
+        "Indonesia 2025",
+        "North Sumatra Flooding 2025"
+      ],
+      "mappingTypes": [
+        "BUILDINGS"
+      ],
+      "percentMapped": 58,
+      "percentValidated": 34,
+      "changesetComment": "#hotosm-project-37395 #IDN-DisasterResponse #sumateraflood2025"
+    },
+    {
+      "id": 34394,
+      "source": "tm-touched",
+      "changesets": [],
+      "mappers": [
+        "HVaadal"
+      ],
+      "tmCentroid": [
+        126.233109,
+        7.077195
+      ],
+      "name": "Remote Building Mapping for Davao Earthquakes 2025 - Easy [1]",
+      "shortDescription": "**Map the Way to Recovery: Help Communities in Davao Oriental, Philippines.** On October 10, 2025, a powerful double earthquake struck off the coast of Manay, Davao Oriental, causing [severe damage](https://reliefweb.int/report/philippines/philippines-davao-earthquakes-2025-dref-operation-mdrph058) across the Davao Region and Caraga. First responders need accurate maps to deliver aid, and you can ",
+      "bbox": [
+        125.947266,
+        6.297554,
+        126.596832,
+        7.949077
+      ],
+      "centre": [
+        126.27204900000001,
+        7.1233155
+      ],
+      "created": "2025-11-05T04:09:08.751000Z",
+      "status": "ARCHIVED",
+      "countries": [
+        "Philippines"
+      ],
+      "organisation": "Open Mapping Hub Asia-Pacific",
+      "campaigns": [
+        "Davao Earthquake Mapping 2025"
+      ],
+      "mappingTypes": [
+        "BUILDINGS"
+      ],
+      "percentMapped": 100,
+      "percentValidated": 100,
+      "changesetComment": "#hotosm-project-34394 #PH-EQ2025 Please explain your changes:"
+    },
+    {
+      "id": 33798,
+      "source": "tm-touched",
+      "changesets": [],
+      "mappers": [
+        "FramtIda",
+        "HVaadal"
+      ],
+      "tmCentroid": [
+        -53.236244,
+        47.573476
+      ],
+      "name": "Missing Maps (Wildfires) : Holyrood & Carbonear, Newfoundland, Canada",
+      "shortDescription": "*The Missing Maps project aims to map the most vulnerable places in the world (affected by humanitarian crises: disease epidemics, conflict, natural disasters, poverty, and environmental crises). Building on HOT's disaster preparedness projects, the Missing Maps tasks facilitate pre-emptive mapping of priority countries to better facilitate disaster response, medical activities and resource alloca",
+      "bbox": [
+        -53.338242,
+        47.387017,
+        -53.127313,
+        47.781745
+      ],
+      "centre": [
+        -53.2327775,
+        47.584381
+      ],
+      "created": "2025-10-30T13:28:20.891000Z",
+      "status": "PUBLISHED",
+      "countries": [
+        "Canada"
+      ],
+      "organisation": "Canadian Red Cross",
+      "campaigns": [],
+      "mappingTypes": [
+        "BUILDINGS",
+        "ROADS"
+      ],
+      "percentMapped": 42,
+      "percentValidated": 5,
+      "changesetComment": "#hotosm-project-33798 #CanCross #CRC #MissingMaps #NLWildfires"
+    },
+    {
+      "id": 31356,
+      "source": "tm-touched",
+      "changesets": [],
+      "mappers": [
+        "HVaadal"
+      ],
+      "tmCentroid": [
+        40.890068,
+        34.518015
+      ],
+      "name": "Missing Maps: Al-Bukamal, Syria (2)",
+      "shortDescription": "After 14 years of war, Syria has been left with large-scale destruction, massive displacement, economic hardship and a lack of basic services, including healthcare. In response, Médecins Sans Frontières (MSF) has started planning how best to meet people’s needs where our teams were unable to work previously. This includes the northeast of Syria, where MSF currently supports hospitals and health ce",
+      "bbox": [
+        40.741425,
+        34.384246,
+        40.984497,
+        34.632078
+      ],
+      "centre": [
+        40.862961,
+        34.508162
+      ],
+      "created": "2025-09-23T13:33:59.589000Z",
+      "status": "ARCHIVED",
+      "countries": [
+        "Syria"
+      ],
+      "organisation": "Médecins Sans Frontières (MSF) ",
+      "campaigns": [],
+      "mappingTypes": [
+        "BUILDINGS"
+      ],
+      "percentMapped": 100,
+      "percentValidated": 100,
+      "changesetComment": "#hotosm-project-31356 mapping buildings in #easternSyria for #MSF #MissingMaps"
+    },
+    {
+      "id": 28287,
+      "source": "tm-touched",
+      "changesets": [],
+      "mappers": [
+        "HVaadal"
+      ],
+      "tmCentroid": [
+        72.445574,
+        34.585663
+      ],
+      "name": "Pakistan Monsoon Floods 2025 - Map building footprints for Buner District",
+      "shortDescription": "Severe flooding has impacted parts of Buner, Pakistan, disrupting infrastructure and communities. This project aims to improve OpenStreetMap coverage of building footprints in the affected areas to support disaster response, planning, and resilience-building efforts. Your contributions will help local responders and planners better understand the extent of the disaster and effectively directing ai",
+      "bbox": [
+        72.410003,
+        34.520974,
+        72.48717,
+        34.64484
+      ],
+      "centre": [
+        72.4485865,
+        34.582907000000006
+      ],
+      "created": "2025-08-23T01:30:06.291000Z",
+      "status": "ARCHIVED",
+      "countries": [
+        "Pakistan"
+      ],
+      "organisation": "Open Mapping Hub Asia-Pacific",
+      "campaigns": [
+        "Pakistan Floods 2025"
+      ],
+      "mappingTypes": [
+        "BUILDINGS"
+      ],
+      "percentMapped": 100,
+      "percentValidated": 100,
+      "changesetComment": "#hotosm-project-28287 #omguru #aphub #osmpakistan #pakistanfloods2025"
+    },
+    {
+      "id": 18618,
+      "source": "tm-touched",
+      "changesets": [],
+      "mappers": [
+        "HVaadal"
+      ],
+      "tmCentroid": [
+        96.054229,
+        21.884145
+      ],
+      "name": "Myanmar Earthquake 2025 - Amarapura/Mandalay Buildings Mapping",
+      "shortDescription": "On March 28, 2025, a devastating shallow 7.7-magnitude earthquake with its epicenter near Mandalay struck central Myanmar, causing widespread destruction, especially along the geological fault line running in a north-south direction across the country. Large areas, including major cities such as Mandalay, Sagaing, and Naypyidaw, were severely affected. This disaster strikes amid an already dire si",
+      "bbox": [
+        95.990106,
+        21.856602,
+        96.145489,
+        21.940128
+      ],
+      "centre": [
+        96.0677975,
+        21.898365
+      ],
+      "created": "2025-04-07T18:34:16.587000Z",
+      "status": "ARCHIVED",
+      "countries": [
+        "Myanmar"
+      ],
+      "organisation": "myOSM",
+      "campaigns": [
+        "Myanmar Earthquake 2025"
+      ],
+      "mappingTypes": [
+        "BUILDINGS"
+      ],
+      "percentMapped": 100,
+      "percentValidated": 100,
+      "changesetComment": "#hotosm-project-18618 #APHub  #myOSM #help-mm-earthquake"
+    },
+    {
+      "id": 18418,
+      "source": "tm-touched",
+      "changesets": [],
+      "mappers": [
+        "Heidi Bergfald",
+        "karl_ove"
+      ],
+      "tmCentroid": [
+        30.113183,
+        -4.594521
+      ],
+      "name": "Mapping Nyarugusu Refuge Camp South Part 2",
+      "shortDescription": "UNHCR, the UN Refugee Agency, is a global organization dedicated to saving lives, protecting rights and building a better future for people forced to flee their homes because of conflict and persecution.",
+      "bbox": [
+        30.095419,
+        -4.609751,
+        30.142929,
+        -4.583326
+      ],
+      "centre": [
+        30.119174,
+        -4.596538499999999
+      ],
+      "created": "2025-02-07T16:30:38.452000Z",
+      "status": "PUBLISHED",
+      "countries": [
+        "Tanzania"
+      ],
+      "organisation": "Humanitarian OpenStreetMap Team - Eastern and Southern Africa Open Mapping Hub (HOT ESA Hub)",
+      "campaigns": [],
+      "mappingTypes": [
+        "BUILDINGS",
+        "ROADS",
+        "LAND_USE",
+        "OTHER",
+        "WATERWAYS"
+      ],
+      "percentMapped": 100,
+      "percentValidated": 100,
+      "changesetComment": "#hotosm-project-18418 #omhesa#UNHCR_CariboumappingNyarugusuRefugeCamp2025 #AfricaMapCup2026 #tt_event"
+    },
+    {
+      "id": 17238,
+      "source": "tm-touched",
+      "changesets": [],
+      "mappers": [
+        "HVaadal"
+      ],
+      "tmCentroid": [
+        12.620119,
+        8.616917
+      ],
+      "name": "Création du référentiel géographique à grande échelle du Cameroun _Bâtiments (NO0302) ",
+      "shortDescription": "Création du référentiel géographique à grande échelle du Cameroun _Bâtiments Financé par l'Union Européenne et réalisé par Expertise France, Ce projet de par l'appui de GeOsm vise à cartographier l’ensemble du territoire sur des thématiques précises telles que celle du bâti.",
+      "bbox": [
+        12.243795,
+        8.174073,
+        12.952492,
+        9.252036
+      ],
+      "centre": [
+        12.598143499999999,
+        8.7130545
+      ],
+      "created": "2024-07-21T12:39:09.140000Z",
+      "status": "PUBLISHED",
+      "countries": [
+        "Cameroon"
+      ],
+      "organisation": "GeOsm Family",
+      "campaigns": [],
+      "mappingTypes": [
+        "BUILDINGS"
+      ],
+      "percentMapped": 47,
+      "percentValidated": 0,
+      "changesetComment": "#hotosm-project-17238 #GEOSM #PUC #NORD"
+    },
+    {
+      "id": 16193,
+      "source": "tm-touched",
+      "changesets": [],
+      "mappers": [
+        "HVaadal"
+      ],
+      "tmCentroid": [
+        110.677398,
+        -6.948971
+      ],
+      "name": "DISASTER RESPONSE - KABUPATEN DEMAK - BANJIR PROVINSI JAWA TENGAH",
+      "shortDescription": "Pemetaan respon bencana banjir di Provinsi Jawa Tengah untuk kabupaten Demak",
+      "bbox": [
+        110.509385,
+        -7.1482,
+        110.83358,
+        -6.793707
+      ],
+      "centre": [
+        110.6714825,
+        -6.9709535
+      ],
+      "created": "2024-02-20T06:46:49.486000Z",
+      "status": "ARCHIVED",
+      "countries": [
+        "Indonesia"
+      ],
+      "organisation": "Perkumpulan OpenStreetMap Indonesia",
+      "campaigns": [],
+      "mappingTypes": [
+        "ROADS",
+        "BUILDINGS",
+        "WATERWAYS"
+      ],
+      "percentMapped": 96,
+      "percentValidated": 33,
+      "changesetComment": "#hotosm-project-16193 #banjirdemak #disasterresponse #POI2024"
+    }
+  ]
+}

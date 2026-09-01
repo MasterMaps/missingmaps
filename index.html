@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Før / etter — #iugnorge</title>
+    <meta
+      name="description"
+      content="Before and after maps for the HOT Tasking Manager projects mapped by Ingeniører Uten Grenser Norge."
+    />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🗺️</text></svg>" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <h1>Før <span class="arrow">→</span> etter</h1>
+        <p class="tagline">What <code id="hashtag">#iugnorge</code> added to OpenStreetMap</p>
+      </div>
+
+      <div class="controls">
+        <label class="field">
+          <span>Project</span>
+          <select id="project"></select>
+        </label>
+        <label class="field">
+          <span>Before</span>
+          <input type="date" id="before-date" />
+        </label>
+        <button id="another-area" type="button" title="Jump to another area the group mapped">
+          Another area
+        </button>
+      </div>
+    </header>
+
+    <div id="project-info" class="project-info"></div>
+
+    <main class="panes">
+      <section id="pane-before" class="pane"></section>
+      <section id="pane-after" class="pane"></section>
+    </main>
+
+    <div id="status" class="status" hidden></div>
+
+    <footer class="footer">
+      <span id="dataset-note"></span>
+      <span>
+        Map data ©
+        <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> · history via
+        <a href="https://overpass-api.de/">Overpass API</a> · projects via
+        <a href="https://tasks.hotosm.org/">HOT Tasking Manager</a>
+      </span>
+    </footer>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
