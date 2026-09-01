@@ -1,8 +1,14 @@
 # What #iugnorge mapped
 
-A static web app that shows what **#iugnorge** has put on OpenStreetMap: pick one of the HOT
-Tasking Manager projects the group has mapped and every building, road and waterway they added
-lights up on the map, inside the task squares they worked in. Click a square to zoom into it.
+A static web app that shows what **#iugnorge** has put on OpenStreetMap. It opens on a globe with
+one dot per project, sized by how much was mapped there; click a dot, or pick from the list, and it
+zooms to that project's work — every building, road and waterway the group added, inside the
+Tasking Manager task squares they worked in. Click a square to zoom into it.
+
+Nothing is hidden when you select a project: neighbouring work stays on the map as context.
+
+As of the first full build: **38,772 features and 2,082 task squares across 48 projects**, from a
+5.6 MB tile archive.
 
 Live at **https://mastermaps.github.io/missingmaps/**
 
@@ -63,7 +69,12 @@ concurrent queries per client and firewalls clients that lean on it — not a 42
 simply stops opening. A room of mapathon participants on one venue wifi shares that budget. Tiles
 sidestep the problem entirely: the extraction happens once, in CI, on a clean address.
 
-[`scripts/build-tiles.mjs`](scripts/build-tiles.mjs) builds the archive. Two details are worth
+It also writes [`public/data/tiles.json`](public/data/tiles.json) — feature count, square count and
+bounding box per project. The app uses it to frame a project by the true extent of its work, to size
+the globe dots, and to leave out the handful of projects that are a single stray changeset and would
+open on an empty map.
+
+[`scripts/build-tiles.mjs`](scripts/build-tiles.mjs) builds the archive. Four details are worth
 knowing:
 
 - **Query areas follow the changesets, not the project boundary.** Tasking Manager areas of
@@ -73,9 +84,26 @@ knowing:
   queries to 518. The trade-off is that a changeset whose edits sprawl more than 3 km from its
   centre could lose features at the fringe — task squares are about 1 km, so this should be
   comfortably safe.
+- **Ways are deduplicated by id.** Those 3 km margins make neighbouring boxes overlap by more than
+  the stride between them, so most ways come back from two to four boxes. Counted naively that
+  inflated the total to 97k features against the 42.6k ohsome attributes to the hashtag.
+- **A partial answer is refused.** An oversized Overpass query returns HTTP 200 with a truncated
+  element list and a `remark` saying it gave up. A remark now means the box was too big: quarter it
+  and ask again.
 - **Attribution is by the changeset that last touched a way.** Exact for anything nobody has
   edited since, an undercount otherwise: a building we drew and a validator later squared off
-  now belongs to their changeset. It undercounts; it never claims someone else's work.
+  now belongs to their changeset. It undercounts; it never claims someone else's work. Against
+  ohsome's independent count of 42,574 buildings for the hashtag, the archive holds 91%; the gap is
+  this effect plus the 1,415 buildings ohsome says were later deleted.
+
+Extraction runs against [`overpass.openstreetmap.fr`](https://overpass.openstreetmap.fr), falling
+back to `overpass-api.de`. Only current state is ever requested — no historical queries — so the
+instance that serves it does not need attic support, and CORS is irrelevant server-side. Measured on
+the same query the French instance answers in ~3 s where the main one took 22 s per cell once
+queueing was counted, and its database is current to the minute.
+
+**Node edits are not captured.** The extractor asks for ways only, so projects whose work was place
+names or POIs show nothing — that is why a few of the older projects come out empty.
 
 ### Updating after a mapathon
 
@@ -102,7 +130,8 @@ npm install
 npm run dev            # http://localhost:5173/missingmaps/
 npm run build
 
-node scripts/build-tiles.mjs --only 63366   # rebuild tiles for one project
+node scripts/build-tiles.mjs                # rebuild tiles, reusing cached extracts
+node scripts/build-tiles.mjs --only 63366   # re-query one project, re-tile everything
 
 npm run ingest                        # scan the last ~26 h of changesets
 node scripts/ingest.mjs planet        # full history from the changeset dump
@@ -142,11 +171,17 @@ To set the token up:
 
 ### Automation
 
-- **Update project list** — every six hours, scans new changesets and commits the JSON if it changed.
-- **Build map tiles** — manual. Needs `tippecanoe`, which it builds from source; takes roughly an
-  hour for all projects, most of it waiting on Overpass query slots.
-- **Deploy to GitHub Pages** — builds and publishes on every push to `main`, including the commits
-  the other two make.
+- **Update project list** — every six hours. Scans new changesets, commits the JSON if it changed,
+  and dispatches a tile rebuild for exactly the projects that moved.
+- **Build map tiles** — dispatched by the above, or run by hand. Builds `tippecanoe` from source
+  (there are no prebuilt binaries). About 30 minutes from cold; **8 seconds** when every project is
+  cached, which is the normal case.
+- **Deploy to GitHub Pages** — on every push, and on request from the other two.
+
+That last point is not a nicety. A push made with the default `GITHUB_TOKEN` deliberately does not
+trigger workflows, to stop them looping, so neither the tile build nor the project-list refresh can
+publish itself by committing. Both call `gh workflow run deploy.yml` explicitly once their commit
+lands. Remove that and the site quietly stops updating while every job still reports success.
 
 Enable Pages once under _Settings → Pages → Source: GitHub Actions_.
 

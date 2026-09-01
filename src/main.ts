@@ -126,7 +126,9 @@ function select(id: number | null) {
   else url.searchParams.delete('project')
   history.replaceState(null, '', url)
 
-  map.filterToProject(current?.id ?? null)
+  // Selecting a project frames it; it does not hide anyone else's work. What
+  // the group mapped next door is context, and blanking it looked like a gap
+  // in the data.
   renderInfo(current)
 
   if (current) frame(current)

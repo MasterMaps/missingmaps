@@ -34,7 +34,7 @@ body {
   flex-wrap: wrap;
   align-items: flex-end;
   gap: 1.5rem 2rem;
-  padding: 0.85rem 1.25rem;
+  padding: 0.55rem 1.25rem;
   background: var(--panel);
   border-bottom: 1px solid var(--line);
 }
@@ -110,7 +110,7 @@ button:disabled {
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 0.25rem 1.5rem;
-  padding: 0.55rem 1.25rem;
+  padding: 0.4rem 1.25rem;
   font-size: 0.85rem;
   background: #171b1f;
   border-bottom: 1px solid var(--line);
@@ -139,8 +139,8 @@ button:disabled {
 /* ------------------------------------------------------------------ status */
 
 .status {
-  padding: 0.45rem 1.25rem;
-  font-size: 0.85rem;
+  padding: 0.35rem 1.25rem;
+  font-size: 0.82rem;
   border-top: 1px solid var(--line);
   background: var(--panel);
 }
@@ -160,8 +160,8 @@ button:disabled {
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 0.5rem 1.5rem;
-  padding: 0.5rem 1.25rem;
-  font-size: 0.72rem;
+  padding: 0.35rem 1.25rem;
+  font-size: 0.7rem;
   color: var(--muted);
   background: #101316;
 }

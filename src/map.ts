@@ -115,9 +115,18 @@ export class HighlightMap {
     })
   }
 
-  /** Pulls back to the whole globe rather than fitting a world-sized bbox. */
+  /**
+   * Pulls back to the whole globe, sized to the window rather than to a fixed
+   * zoom — a fitBounds of the world does not do the right thing on a sphere.
+   *
+   * The globe is about 380px across at zoom 1.5 and scales with 2^zoom, which
+   * is enough to solve for a zoom that nearly fills the shorter side.
+   */
   showWorld() {
-    this.map.easeTo({ center: [12, 8], zoom: 1.5, duration: 900 })
+    const canvas = this.map.getCanvas()
+    const target = Math.min(canvas.clientWidth, canvas.clientHeight) * 0.94
+    const zoom = 1.5 + Math.log2(Math.max(target, 160) / 380)
+    this.map.easeTo({ center: [12, 8], zoom, duration: 900 })
   }
 
   zoomTo(bbox: Bbox, options: { padding?: number; maxZoom?: number; duration?: number } = {}) {
@@ -130,23 +139,6 @@ export class HighlightMap {
 
   popup(lngLat: [number, number], html: string) {
     new Popup({ closeButton: false, offset: 8 }).setLngLat(lngLat).setHTML(html).addTo(this.map)
-  }
-
-  /** Restricts the highlight layers to one project, or shows all of them. */
-  filterToProject(id: number | null) {
-    const filter = id === null ? null : (['==', ['get', 'project'], id] as never)
-    for (const layer of [
-      'task-fill',
-      'task-outline',
-      'task-label',
-      'our-waterways',
-      'our-roads',
-      'our-buildings',
-      'our-buildings-outline',
-      'our-buildings-dot',
-    ]) {
-      if (this.map.getLayer(layer)) this.map.setFilter(layer, filter)
-    }
   }
 
   resize() {
