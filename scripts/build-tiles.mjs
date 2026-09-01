@@ -54,6 +54,12 @@ const CELL_DEG = 0.05
 const MARGIN_DEG = 0.03
 /** Fallback only, for a project with no recorded changeset locations. */
 const MAX_SPAN_DEG = 0.25
+/**
+ * Give up on a box after this many refusals. Generous, because a skipped
+ * project leaves a hole in the archive until someone notices — and a run that
+ * takes longer is cheaper than a rebuild that has to happen twice.
+ */
+const MAX_ATTEMPTS = 14
 
 const args = process.argv.slice(2)
 const flag = (name, fallback) => {
@@ -95,19 +101,27 @@ out meta geom;`
  * earlier run asleep. Overpass publishes exactly when the next slot frees, and
  * it is usually seconds away.
  */
-async function slotWait() {
+async function slotWait(attempt = 0) {
+  // A reported free slot is not a reserved one. overpass-api.de load-balances
+  // across backends and CI runners share an address with other tenants, so the
+  // slot is often gone by the time we ask for it. Retrying two seconds later
+  // just burns an attempt, hence a floor that grows with each refusal.
+  const floor = Math.min(5000 * (attempt + 1), 90_000)
+  let reported = 15_000
   try {
     const res = await fetch(`${OVERPASS.replace('/interpreter', '/status')}`, {
       headers: { 'User-Agent': UA },
     })
     const text = await res.text()
-    if (/slots? available now/i.test(text)) return 2000
-    const seconds = [...text.matchAll(/in (-?\d+) seconds/g)].map((m) => Number(m[1]))
-    if (seconds.length) return Math.min(Math.max(...seconds.map((s) => Math.max(s, 0)), 1) + 1, 180) * 1000
+    if (/slots? available now/i.test(text)) reported = 0
+    else {
+      const seconds = [...text.matchAll(/in (-?\d+) seconds/g)].map((m) => Math.max(Number(m[1]), 0))
+      if (seconds.length) reported = Math.min(Math.max(...seconds) + 1, 180) * 1000
+    }
   } catch {
-    // fall through
+    // keep the default
   }
-  return 15_000
+  return Math.max(reported, floor)
 }
 
 async function overpass(data, label) {
@@ -120,15 +134,17 @@ async function overpass(data, label) {
         body: new URLSearchParams({ data }),
       })
     } catch (err) {
-      if (attempt >= 8) throw new Error(`${label}: ${err.message}`)
+      if (attempt >= MAX_ATTEMPTS) throw new Error(`${label}: ${err.message}`)
       await sleep(30_000)
       continue
     }
     if (res.ok) return res.json()
-    if (![429, 504].includes(res.status) || attempt >= 8) throw new Error(`${label}: HTTP ${res.status}`)
+    if (![429, 504].includes(res.status) || attempt >= MAX_ATTEMPTS) {
+      throw new Error(`${label}: HTTP ${res.status}`)
+    }
 
     const retryAfter = Number(res.headers.get('retry-after')) * 1000
-    const wait = retryAfter || (await slotWait())
+    const wait = retryAfter || (await slotWait(attempt))
     console.log(`    no slot, waiting ${Math.round(wait / 1000)}s`)
     await sleep(wait)
   }
