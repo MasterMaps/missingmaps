@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write
+  actions: write # to trigger the deploy, which our own push cannot do
 
 concurrency:
   group: tiles
@@ -55,3 +56,11 @@ jobs:
           git commit -m 'tiles: rebuild #iugnorge highlight layer'
           git pull --rebase --autostash
           git push
+
+      # A push made with GITHUB_TOKEN deliberately does not trigger workflows,
+      # so the deploy has to be asked for explicitly.
+      - name: Publish the new tiles
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml
