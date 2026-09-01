@@ -1,0 +1,49 @@
+name: Build map tiles
+
+on:
+  workflow_dispatch:
+    inputs:
+      only:
+        description: 'Comma-separated project ids to rebuild, or blank for all'
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tiles
+  cancel-in-progress: false
+
+jobs:
+  tiles:
+    runs-on: ubuntu-latest
+    # One Overpass query per project area, politely paced.
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Build tippecanoe
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq build-essential libsqlite3-dev zlib1g-dev
+          git clone --depth 1 --branch 2.79.0 https://github.com/felt/tippecanoe.git /tmp/tippecanoe
+          make -C /tmp/tippecanoe -j"$(nproc)"
+          sudo make -C /tmp/tippecanoe install
+          tippecanoe --version
+
+      - name: Extract and tile
+        run: node scripts/build-tiles.mjs --only "${{ inputs.only }}"
+
+      - name: Commit if the tiles changed
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add public/tiles
+          git diff --cached --quiet && echo 'tiles unchanged' && exit 0
+          ls -lh public/tiles
+          git commit -m 'tiles: rebuild #iugnorge highlight layer'
+          git push
