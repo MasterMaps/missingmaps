@@ -39,7 +39,20 @@ import { spawn } from 'node:child_process'
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const DATA_FILE = resolve(ROOT, 'public/data/projects.json')
 
-const OVERPASS = 'https://overpass-api.de/api/interpreter'
+/**
+ * The build only ever asks for the current state — no historical `[date:]`
+ * queries — so it is not tied to overpass-api.de the way the browser once was,
+ * and CORS is irrelevant server-side. The French instance is minutely current,
+ * answers these queries in about three seconds, and does not throttle us; the
+ * main instance is the fallback, where the same query took twenty-two seconds
+ * once queueing is counted. Tried in order, sticking with whichever answers.
+ */
+const ENDPOINTS = [
+  'https://overpass.openstreetmap.fr/api/interpreter',
+  'https://overpass-api.de/api/interpreter',
+]
+let preferred = 0
+const host = (url) => new URL(url).host
 const TM_API = 'https://tasking-manager-production-api.hotosm.org/api/v2'
 const UA = 'missingmaps-iug/1.0 (+https://github.com/MasterMaps/missingmaps)'
 
@@ -101,15 +114,15 @@ out meta geom;`
  * earlier run asleep. Overpass publishes exactly when the next slot frees, and
  * it is usually seconds away.
  */
-async function slotWait(attempt = 0) {
+async function slotWait(endpoint, round = 0) {
   // A reported free slot is not a reserved one. overpass-api.de load-balances
   // across backends and CI runners share an address with other tenants, so the
   // slot is often gone by the time we ask for it. Retrying two seconds later
   // just burns an attempt, hence a floor that grows with each refusal.
-  const floor = Math.min(5000 * (attempt + 1), 90_000)
+  const floor = Math.min(5000 * (round + 1), 90_000)
   let reported = 15_000
   try {
-    const res = await fetch(`${OVERPASS.replace('/interpreter', '/status')}`, {
+    const res = await fetch(endpoint.replace('/interpreter', '/status'), {
       headers: { 'User-Agent': UA },
     })
     const text = await res.text()
@@ -124,30 +137,39 @@ async function slotWait(attempt = 0) {
   return Math.max(reported, floor)
 }
 
+const RETRYABLE = [429, 500, 502, 503, 504]
+
 async function overpass(data, label) {
-  for (let attempt = 0; ; attempt++) {
-    let res
+  let last = 'unknown'
+  for (let attempt = 0; attempt <= MAX_ATTEMPTS * ENDPOINTS.length; attempt++) {
+    const index = (preferred + attempt) % ENDPOINTS.length
+    const endpoint = ENDPOINTS[index]
     try {
-      res = await fetch(OVERPASS, {
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'User-Agent': UA },
         body: new URLSearchParams({ data }),
       })
+      if (res.ok) {
+        preferred = index
+        return res.json()
+      }
+      if (!RETRYABLE.includes(res.status)) throw new Error(`HTTP ${res.status} from ${host(endpoint)}`)
+      last = `HTTP ${res.status} from ${host(endpoint)}`
     } catch (err) {
-      if (attempt >= MAX_ATTEMPTS) throw new Error(`${label}: ${err.message}`)
-      await sleep(30_000)
-      continue
-    }
-    if (res.ok) return res.json()
-    if (![429, 504].includes(res.status) || attempt >= MAX_ATTEMPTS) {
-      throw new Error(`${label}: HTTP ${res.status}`)
+      if (!/HTTP \d+/.test(err.message)) last = `${host(endpoint)}: ${err.message}`
+      else throw new Error(`${label}: ${err.message}`)
     }
 
-    const retryAfter = Number(res.headers.get('retry-after')) * 1000
-    const wait = retryAfter || (await slotWait(attempt))
-    console.log(`    no slot, waiting ${Math.round(wait / 1000)}s`)
-    await sleep(wait)
+    // Only sleep once every endpoint has refused this round.
+    if ((attempt + 1) % ENDPOINTS.length === 0) {
+      const round = Math.floor(attempt / ENDPOINTS.length)
+      const wait = await slotWait(endpoint, round)
+      console.log(`    no slot (${last}), waiting ${Math.round(wait / 1000)}s`)
+      await sleep(wait)
+    }
   }
+  throw new Error(`${label}: ${last}`)
 }
 
 /**
@@ -327,7 +349,7 @@ async function extract(project, label) {
       if (!ourChangesets.has(el.changeset)) continue
       ours.push(el)
     }
-    await sleep(1000) // Overpass allows two slots; one at a time is polite.
+    await sleep(500) // one query at a time, with a pause, is a polite client.
   }
 
   const features = Object.fromEntries(layers.map((l) => [l, []]))
