@@ -81,6 +81,9 @@ async function saveStore(store) {
   console.log(`\nwrote ${DATA_FILE} — ${projects.length} projects, ${store.mappers.length} mappers`)
 }
 
+/** Projects that gained a changeset in this run — the tile build needs to know. */
+const touchedProjects = new Set()
+
 /**
  * Folds one changeset into the store. `cs` is the normalised shape
  * { id, user, createdAt, hashtags, comment, host, changes }.
@@ -99,7 +102,10 @@ function record(store, cs) {
     // A changeset shows up in several replication files (once open, once closed),
     // so everything cumulative below has to be guarded on first sight.
     const firstSight = !p.changesets.includes(cs.id)
-    if (firstSight) p.changesets.push(cs.id)
+    if (firstSight) {
+      p.changesets.push(cs.id)
+      touchedProjects.add(id)
+    }
     if (cs.user && !p.mappers.includes(cs.user)) p.mappers.push(cs.user)
     if (cs.createdAt) {
       if (!p.firstEdit || cs.createdAt < p.firstEdit) p.firstEdit = cs.createdAt
@@ -483,3 +489,11 @@ if (!['planet', 'replication', 'osmcha', 'touched', 'all'].includes(mode)) {
 
 await enrich(store)
 await saveStore(store)
+
+// The tile archive is built from these projects, so whatever moved here needs
+// re-extracting. Handed to the workflow rather than acted on directly.
+const changed = [...touchedProjects].sort((a, b) => a - b).join(',')
+if (changed) console.log(`changed projects: ${changed}`)
+if (process.env.GITHUB_OUTPUT) {
+  await writeFile(process.env.GITHUB_OUTPUT, `changed=${changed}\n`, { flag: 'a' })
+}

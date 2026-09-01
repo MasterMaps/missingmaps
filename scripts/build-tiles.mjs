@@ -16,11 +16,19 @@
  * drew and someone else later squared off now belongs to their changeset. It
  * undercounts; it never claims someone else's work.
  *
- * Runs in CI: it makes a few hundred Overpass queries, and Overpass firewalls
- * clients that do that from a shared address.
+ * Runs in CI: a full build makes a few hundred Overpass queries, and Overpass
+ * firewalls clients that do that from a shared address.
+ *
+ * Extracted features are cached per project under extracts/, so a rebuild after
+ * a mapathon only re-queries what changed and re-tiles the rest from disk —
+ * minutes instead of an hour. A project is re-queried when --only names it, when
+ * it has no cached extract, or when its changeset count has moved since the
+ * cache was written. The archive is always rebuilt from every cached project, so
+ * --only narrows the querying without narrowing the output.
  *
  * Usage:
- *   node scripts/build-tiles.mjs [--only 49638,63366] [--outdir public/tiles]
+ *   node scripts/build-tiles.mjs                    # everything, cache-aware
+ *   node scripts/build-tiles.mjs --only 49638,63366 # re-query just these
  */
 
 import { readFile, writeFile, mkdir, rm } from 'node:fs/promises'
@@ -54,6 +62,12 @@ const flag = (name, fallback) => {
 }
 const OUT_DIR = resolve(ROOT, flag('outdir', 'public/tiles'))
 const WORK_DIR = resolve(ROOT, '.tiles-work')
+/**
+ * One file of extracted features per project, kept in the repository so a
+ * rebuild after a mapathon only has to re-query the project that changed.
+ * Not under public/, so it is never published.
+ */
+const EXTRACT_DIR = resolve(ROOT, 'extracts')
 const only = (flag('only', '') || '').split(',').map((s) => s.trim()).filter(Boolean).map(Number)
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
@@ -243,58 +257,88 @@ async function ourTaskSquares(projectId, points) {
 /* ------------------------------------------------------------------ main */
 
 const raw = JSON.parse(await readFile(DATA_FILE, 'utf8'))
-const projects = raw.projects.filter(
-  (p) => (p.bbox || p.editBbox) && p.changesets?.length && (!only.length || only.includes(p.id)),
-)
-console.log(`tiles: ${projects.length} projects with #${raw.hashtag} changesets\n`)
+const projects = raw.projects.filter((p) => (p.bbox || p.editBbox) && p.changesets?.length)
 
 await rm(WORK_DIR, { recursive: true, force: true })
 await mkdir(WORK_DIR, { recursive: true })
+await mkdir(EXTRACT_DIR, { recursive: true })
 
 const layers = ['buildings', 'roads', 'waterways', 'tasks']
 const streams = Object.fromEntries(layers.map((l) => [l, []]))
 const perProject = {}
 
-for (const [index, project] of projects.entries()) {
-  const label = `#${project.id} ${(project.name || '').slice(0, 40)}`
-  console.log(`[${index + 1}/${projects.length}] ${label}`)
-
+/** Re-query a project only when asked to, or when we have never extracted it. */
+async function extract(project, label) {
   const ourChangesets = new Set(project.changesets)
   const pieces = queryAreas(project)
   const ours = []
 
-  try {
-    for (const [i, piece] of pieces.entries()) {
-      const suffix = pieces.length > 1 ? ` [${i + 1}/${pieces.length}]` : ''
-      const body = await overpass(query(piece), `${label}${suffix}`)
-      for (const el of body.elements || []) {
-        if (el.type !== 'way' || !el.geometry || el.geometry.length < 2) continue
-        if (!ourChangesets.has(el.changeset)) continue
-        ours.push(el)
-      }
-      await sleep(1000) // Overpass allows two slots; one at a time is polite.
+  for (const [i, piece] of pieces.entries()) {
+    const suffix = pieces.length > 1 ? ` [${i + 1}/${pieces.length}]` : ''
+    const body = await overpass(query(piece), `${label}${suffix}`)
+    for (const el of body.elements || []) {
+      if (el.type !== 'way' || !el.geometry || el.geometry.length < 2) continue
+      if (!ourChangesets.has(el.changeset)) continue
+      ours.push(el)
     }
-  } catch (err) {
-    console.warn(`  failed: ${err.message}`)
-    continue
+    await sleep(1000) // Overpass allows two slots; one at a time is polite.
   }
 
+  const features = Object.fromEntries(layers.map((l) => [l, []]))
   const points = []
-  let kept = 0
   for (const el of ours) {
-    const feature = toFeature(el, project.id)
-    if (!feature) continue
-    const [layer, properties, geometry] = feature
-    streams[layer].push(JSON.stringify({ type: 'Feature', properties, geometry }))
+    const converted = toFeature(el, project.id)
+    if (!converted) continue
+    const [layer, properties, geometry] = converted
+    features[layer].push({ type: 'Feature', properties, geometry })
     points.push(centroid(geometry.type === 'Polygon' ? geometry.coordinates[0] : geometry.coordinates))
-    kept++
+  }
+  features.tasks = await ourTaskSquares(project.id, points)
+
+  return { id: project.id, changesets: project.changesets.length, features }
+}
+
+const extractPath = (id) => join(EXTRACT_DIR, `${id}.json`)
+
+for (const [index, project] of projects.entries()) {
+  const label = `#${project.id} ${(project.name || '').slice(0, 40)}`
+  const path = extractPath(project.id)
+
+  let cached = null
+  if (!only.includes(project.id)) {
+    try {
+      cached = JSON.parse(await readFile(path, 'utf8'))
+      // A project that has gained changesets since we last looked needs redoing.
+      if (cached.changesets !== project.changesets.length) cached = null
+    } catch {
+      cached = null
+    }
   }
 
-  const squares = await ourTaskSquares(project.id, points)
-  for (const square of squares) streams.tasks.push(JSON.stringify(square))
+  let extracted = cached
+  if (extracted) {
+    console.log(`[${index + 1}/${projects.length}] ${label} — cached`)
+  } else {
+    console.log(`[${index + 1}/${projects.length}] ${label}`)
+    try {
+      extracted = await extract(project, label)
+      await writeFile(path, JSON.stringify(extracted))
+    } catch (err) {
+      console.warn(`  failed: ${err.message}`)
+      continue
+    }
+  }
 
-  perProject[project.id] = { features: kept, squares: squares.length }
-  console.log(`  ${kept} features by us, ${squares.length} task squares`)
+  let kept = 0
+  for (const layer of layers) {
+    for (const feature of extracted.features[layer] ?? []) {
+      streams[layer].push(JSON.stringify(feature))
+      if (layer !== 'tasks') kept++
+    }
+  }
+  const squares = extracted.features.tasks?.length ?? 0
+  perProject[project.id] = { features: kept, squares }
+  if (!cached) console.log(`  ${kept} features by us, ${squares} task squares`)
 }
 
 const totals = Object.values(perProject).reduce(

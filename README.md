@@ -77,8 +77,23 @@ knowing:
   edited since, an undercount otherwise: a building we drew and a validator later squared off
   now belongs to their changeset. It undercounts; it never claims someone else's work.
 
-Tiles are rebuilt by the **Build map tiles** workflow, which is manual — run it after a mapathon,
-optionally with `only` set to just the project ids that changed.
+### Updating after a mapathon
+
+Nothing, if the automation is left alone. The **Update project list** job runs every six hours and
+picks up the new `#iugnorge` changesets from the replication feed; when a project's changeset count
+moves it dispatches **Build map tiles** for exactly that project, which commits new tiles and
+triggers a deploy.
+
+What makes that cheap is a per-project cache under `extracts/`: the features pulled out of Overpass
+for each project are kept as GeoJSON and committed. A rebuild re-queries only the projects named by
+`only` — or any whose changeset count has changed since the cache was written — and re-tiles
+everything else straight from disk. One new mapathon is a couple of minutes rather than an hour.
+
+`only` narrows the *querying*, never the output: the archive is always assembled from every cached
+project, so a targeted rebuild cannot quietly drop the other fifty.
+
+To force a full re-query, delete `extracts/` and run the workflow with `only` blank. The first run
+after the cache was introduced does this anyway, since there is nothing cached yet.
 
 ## Running it
 
