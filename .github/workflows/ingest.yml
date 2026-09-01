@@ -8,10 +8,10 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'replication (recent), osmcha (full backfill, needs OSMCHA_TOKEN), touched, or all'
+        description: 'replication (recent), planet (full history, ~15 min), osmcha (per mapper), touched, or all'
         type: choice
         default: replication
-        options: [replication, osmcha, touched, all]
+        options: [replication, planet, osmcha, touched, all]
       since:
         description: 'osmcha only — backfill from this date'
         default: '2019-01-01'
@@ -27,9 +27,9 @@ jobs:
   ingest:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
 

@@ -3,14 +3,18 @@
  * Builds public/data/projects.json — the list of HOT Tasking Manager projects
  * that changesets tagged #iugnorge have contributed to.
  *
- * Three ways in, all merged into the same file:
+ * Four ways in, all merged into the same file:
  *
  *   replication  (no auth)  Walks the OSM minutely changeset replication feed
  *                           backwards from the current sequence and picks out
  *                           changesets carrying the hashtag. Cheap for a rolling
  *                           window (~11 MB / 6 s per 24 h), hopeless for years.
- *   osmcha       (token)    Queries the OSMCha API by hashtag. This is the only
- *                           practical way to backfill the full history.
+ *   planet       (no auth)  Streams the full changeset dump (~8.7 GB bzip2) and
+ *                           matches the hashtag on the way past. Slow but total:
+ *                           the only source that sees every changeset ever made.
+ *   osmcha       (token)    Asks OSMCha for each known mapper's changesets. Good
+ *                           top-up; cannot find mappers not already in the roster,
+ *                           because OSMCha has no usable hashtag filter.
  *   touched      (no auth)  For every mapper already in the roster, asks the
  *                           Tasking Manager which projects they have worked on.
  *                           Catches projects whose changesets we never scanned,
@@ -18,15 +22,19 @@
  *
  * Usage:
  *   node scripts/ingest.mjs replication [--minutes 1560]
- *   node scripts/ingest.mjs osmcha [--since 2019-01-01]   (needs OSMCHA_TOKEN)
+ *   node scripts/ingest.mjs planet [--dump URL]           (needs bzip2 on PATH)
+ *   node scripts/ingest.mjs osmcha [--since 2019-01-01] [--users "A,B"]
  *   node scripts/ingest.mjs touched
- *   node scripts/ingest.mjs all
+ *   node scripts/ingest.mjs all       (everything except planet)
  */
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { gunzipSync } from 'node:zlib'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { spawn } from 'node:child_process'
+import { Readable } from 'node:stream'
+import { StringDecoder } from 'node:string_decoder'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const DATA_FILE = resolve(ROOT, 'public/data/projects.json')
@@ -124,15 +132,26 @@ function record(store, cs) {
 
 /* -------------------------------------------------------------- fetch util */
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+
 async function get(url, { headers = {}, raw = false, retries = 3 } = {}) {
   for (let attempt = 0; ; attempt++) {
     try {
       const res = await fetch(url, { headers: { 'User-Agent': UA, ...headers } })
+      // A throttled request is not a failed one — back off in seconds, not
+      // milliseconds, and do not count it against the error retries.
+      if (res.status === 429 || res.status === 503) {
+        if (attempt >= retries + 3) throw new Error(`still throttled after ${attempt} tries: ${url}`)
+        const wait = Number(res.headers.get('retry-after')) * 1000 || 30_000 * (attempt + 1)
+        console.log(`  throttled, waiting ${Math.round(wait / 1000)}s`)
+        await sleep(wait)
+        continue
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`)
       return raw ? Buffer.from(await res.arrayBuffer()) : await res.json()
     } catch (err) {
       if (attempt >= retries) throw err
-      await new Promise((r) => setTimeout(r, 500 * 2 ** attempt))
+      await sleep(500 * 2 ** attempt)
     }
   }
 }
@@ -222,51 +241,149 @@ async function ingestReplication(store) {
   console.log(`replication: ${matched} changeset records with #${HASHTAG}`)
 }
 
+/* ----------------------------------------------------------------- planet */
+
+/**
+ * Streams the full changeset dump and matches the hashtag on the way past.
+ * It is ~8.7 GB of bzip2, but it is the only source that sees every changeset
+ * ever made, so it is what finds the mappers and projects nobody in the current
+ * roster can lead us to. Run it once; `replication` keeps things current after.
+ *
+ * The dump lags a few days, so follow it with a `replication` run.
+ */
+async function ingestPlanet(store) {
+  const url = flag('dump', 'https://planet.openstreetmap.org/planet/changesets-latest.osm.bz2')
+  console.log(`planet: streaming ${url}`)
+
+  const res = await fetch(url, { headers: { 'User-Agent': UA } })
+  if (!res.ok) throw new Error(`planet: HTTP ${res.status}`)
+  const total = Number(res.headers.get('content-length')) || 0
+
+  // Node has no bzip2, and shelling out lets the download and the decompression
+  // overlap instead of needing the whole dump on disk first.
+  const bunzip = spawn('bzip2', ['-dc'], { stdio: ['pipe', 'pipe', 'inherit'] })
+  const decoder = new StringDecoder('utf8')
+  let compressed = 0
+  let matched = 0
+  let seen = 0
+  let nextReport = 500 << 20
+
+  Readable.fromWeb(res.body)
+    .on('data', (chunk) => {
+      compressed += chunk.length
+      if (compressed > nextReport) {
+        nextReport += 500 << 20
+        const pct = total ? ` (${Math.round((compressed / total) * 100)}%)` : ''
+        console.log(`planet: ${(compressed / (1 << 30)).toFixed(1)} GB read${pct}, ${matched} matched`)
+      }
+    })
+    .pipe(bunzip.stdin)
+
+  let buf = ''
+  for await (const chunk of bunzip.stdout) {
+    buf += decoder.write(chunk)
+    // Cut the buffer at the last complete element so no changeset is split.
+    const cut = buf.lastIndexOf('</changeset>')
+    if (cut === -1) {
+      if (buf.length > 8 << 20) buf = buf.slice(-(2 << 20))
+      continue
+    }
+    const ready = buf.slice(0, cut + 12)
+    buf = buf.slice(cut + 12)
+
+    // Cheap reject: the vast majority of chunks never mention the hashtag.
+    if (!ready.toLowerCase().includes(HASHTAG)) continue
+    for (const cs of parseChangesets(ready)) {
+      seen++
+      if (!`${cs.hashtags} ${cs.comment}`.toLowerCase().includes(`#${HASHTAG}`)) continue
+      if (record(store, cs)) matched++
+    }
+  }
+
+  await new Promise((resolve, reject) => {
+    bunzip.on('close', (code) => (code === 0 ? resolve() : reject(new Error(`bzip2 exited ${code}`))))
+    bunzip.on('error', reject)
+  })
+  console.log(`planet: ${matched} changeset records with #${HASHTAG} (${seen} candidates examined)`)
+}
+
 /* ----------------------------------------------------------------- osmcha */
 
+/**
+ * OSMCha has no hashtag filter, and the two lookups that could stand in for one
+ * — `metadata=hashtags=x` (icontains into a JSON column) and `comment=x` — both
+ * time out against the production database, even narrowed to a single month.
+ * `users` is indexed and answers in seconds, so the backfill walks the roster
+ * one mapper at a time and matches the hashtag here instead.
+ *
+ * The trade-off: this only sees mappers we already know about. The roster grows
+ * by itself from the replication scan; pass `--users a,b,c` to add people who
+ * have not mapped since the scanning started.
+ */
 async function ingestOsmcha(store) {
   const token = process.env.OSMCHA_TOKEN
   if (!token) {
     console.log('osmcha: OSMCHA_TOKEN not set, skipping backfill')
     return
   }
-  const since = flag('since', '2019-01-01')
-  let url =
-    `https://osmcha.org/api/v1/changesets/?hashtags=${encodeURIComponent(HASHTAG)}` +
-    `&date__gte=${since}&page_size=100`
-  let page = 0
-  let matched = 0
 
-  while (url) {
-    const body = await get(url, { headers: { Authorization: `Token ${token}` } })
-    for (const f of body.features || []) {
-      const p = f.properties || {}
-      // OSMCha has moved fields around between versions; take the union.
-      const tags = p.tags || {}
-      if (
-        record(store, {
-          id: +(f.id ?? p.id),
-          user: p.user,
-          createdAt: p.date || p.created_at,
-          changes: p.create + p.modify + p.delete || 0,
-          // Last resort: OSMCha has reshaped `hashtags` more than once, so if
-          // the known shapes come up empty, scan the raw feature for the
-          // project hashtag rather than dropping a real changeset.
-          hashtags:
-            tags.hashtags ||
-            (Array.isArray(p.hashtags) ? p.hashtags.map((h) => `#${h.name || h}`).join(';') : '') ||
-            JSON.stringify(f),
-          comment: p.comment || tags.comment || '',
-          host: tags.host || '',
-          bbox: bboxOfGeometry(f.geometry),
-        })
-      )
-        matched++
-    }
-    url = body.next
-    if (++page % 10 === 0) console.log(`osmcha: page ${page}, ${matched} matched so far`)
+  for (const extra of (flag('users', '') || '').split(',').map((u) => u.trim()).filter(Boolean)) {
+    if (!store.mappers.includes(extra)) store.mappers.push(extra)
   }
-  console.log(`osmcha: ${matched} changesets with #${HASHTAG} across ${page} pages`)
+  if (!store.mappers.length) {
+    console.log('osmcha: no mappers known yet — run `replication` first, or pass --users a,b,c')
+    return
+  }
+
+  const since = flag('since', '2019-01-01')
+  const headers = { Authorization: `Token ${token}` }
+  let matched = 0
+  let scanned = 0
+
+  await pool(store.mappers, 2, async (user) => {
+    let url =
+      `https://osmcha.org/api/v1/changesets/?users=${encodeURIComponent(user)}` +
+      `&date__gte=${since}&page_size=100`
+    let mine = 0
+
+    try {
+      while (url) {
+        const body = await get(url, { headers })
+        for (const f of body.features || []) {
+          const p = f.properties || {}
+          // Careful: OSMCha's `tags` are its own review labels. The OSM tags of
+          // the changeset live in `metadata`.
+          const meta = p.metadata || {}
+          scanned++
+          const hashtags = meta.hashtags || ''
+          const comment = p.comment || meta.comment || ''
+          if (!`${hashtags} ${comment}`.toLowerCase().includes(`#${HASHTAG}`)) continue
+          if (
+            record(store, {
+              id: +(f.id ?? p.id),
+              user: p.user || user,
+              createdAt: p.date,
+              changes: (p.create || 0) + (p.modify || 0) + (p.delete || 0),
+              hashtags,
+              comment,
+              host: meta.host || '',
+              bbox: bboxOfGeometry(f.geometry),
+            })
+          ) {
+            matched++
+            mine++
+          }
+        }
+        url = body.next
+      }
+      console.log(`osmcha: ${user} — ${mine} #${HASHTAG} changesets`)
+    } catch (err) {
+      // One mapper failing should not throw away everyone else's results.
+      console.warn(`osmcha: ${user} — gave up after ${mine} changesets (${err.message})`)
+    }
+  })
+
+  console.log(`osmcha: ${matched} changeset records with #${HASHTAG}, from ${scanned} scanned`)
 }
 
 /** OSMCha returns the changeset bbox as the feature geometry. */
@@ -354,11 +471,13 @@ const stripHtml = (s) => s.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().
 
 const store = await loadStore()
 
+// `planet` is deliberately not part of `all` — it is a one-off, not a routine.
+if (mode === 'planet') await ingestPlanet(store)
 if (mode === 'replication' || mode === 'all') await ingestReplication(store)
 if (mode === 'osmcha' || mode === 'all') await ingestOsmcha(store)
 if (mode === 'touched' || mode === 'all') await ingestTouched(store)
-if (!['replication', 'osmcha', 'touched', 'all'].includes(mode)) {
-  console.error(`unknown mode "${mode}" — expected replication | osmcha | touched | all`)
+if (!['planet', 'replication', 'osmcha', 'touched', 'all'].includes(mode)) {
+  console.error(`unknown mode "${mode}" — expected planet | replication | osmcha | touched | all`)
   process.exit(1)
 }
 
