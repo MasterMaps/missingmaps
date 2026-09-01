@@ -40,7 +40,11 @@ jobs:
       - name: Extract and tile
         run: node scripts/build-tiles.mjs --only "${{ inputs.only }}"
 
+      # Runs even when extraction failed part way: the extracts written before
+      # it died are worth keeping, and the next run resumes from them instead
+      # of re-querying everything.
       - name: Commit if the tiles changed
+        if: always()
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
