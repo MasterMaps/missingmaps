@@ -49,7 +49,7 @@ jobs:
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add public/tiles extracts
+          git add public/tiles public/data/tiles.json extracts
           git diff --cached --quiet && echo 'tiles unchanged' && exit 0
           ls -lh public/tiles
           du -sh extracts

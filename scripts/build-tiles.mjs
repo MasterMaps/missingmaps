@@ -38,6 +38,8 @@ import { spawn } from 'node:child_process'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const DATA_FILE = resolve(ROOT, 'public/data/projects.json')
+/** What the app needs to know about the archive: counts and extents. */
+const SUMMARY_FILE = resolve(ROOT, 'public/data/tiles.json')
 
 /**
  * The build only ever asks for the current state — no historical `[date:]`
@@ -400,14 +402,32 @@ for (const [index, project] of projects.entries()) {
   }
 
   let kept = 0
+  // Extent of the group's own work, so the app can frame the whole of it
+  // rather than guessing from changeset centres.
+  let bounds = null
+  const stretch = (coords) => {
+    if (typeof coords[0] === 'number') {
+      const [lon, lat] = coords
+      bounds = bounds
+        ? [Math.min(bounds[0], lon), Math.min(bounds[1], lat), Math.max(bounds[2], lon), Math.max(bounds[3], lat)]
+        : [lon, lat, lon, lat]
+    } else coords.forEach(stretch)
+  }
+
   for (const layer of layers) {
     for (const feature of extracted.features[layer] ?? []) {
       streams[layer].push(JSON.stringify(feature))
-      if (layer !== 'tasks') kept++
+      if (layer !== 'tasks') {
+        kept++
+        stretch(feature.geometry.coordinates)
+      }
     }
   }
   const squares = extracted.features.tasks?.length ?? 0
-  perProject[project.id] = { features: kept, squares }
+  // A project with no features of its own still has squares worth framing.
+  if (!bounds) for (const sq of extracted.features.tasks ?? []) stretch(sq.geometry.coordinates)
+
+  perProject[project.id] = { features: kept, squares, bbox: bounds }
   if (!cached) console.log(`  ${kept} features by us, ${squares} task squares`)
 }
 
@@ -454,5 +474,11 @@ await new Promise((done, reject) => {
   proc.on('error', reject)
 })
 
+await writeFile(
+  SUMMARY_FILE,
+  JSON.stringify({ generated: new Date().toISOString(), projects: perProject }, null, 1) + '\n',
+)
+
 await rm(WORK_DIR, { recursive: true, force: true })
 console.log(`\nwrote ${out}`)
+console.log(`wrote ${SUMMARY_FILE}`)

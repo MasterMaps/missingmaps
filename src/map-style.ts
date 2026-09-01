@@ -63,11 +63,18 @@ export function highlightLayers(tilesUrl: string): {
         type: 'symbol',
         source: TILES_SOURCE,
         'source-layer': 'tasks',
-        minzoom: 13,
+        // Only once a square fills enough of the screen to be worth reading.
+        // Below this the labels outnumber the map.
+        minzoom: 15,
         layout: {
-          'text-field': ['concat', ['to-string', ['get', 'edits']], ' edits'],
+          'text-field': [
+            'concat',
+            ['to-string', ['get', 'edits']],
+            ['case', ['==', ['get', 'edits'], 1], ' edit', ' edits'],
+          ],
           'text-font': ['Noto Sans Regular'],
           'text-size': 11,
+          'text-allow-overlap': false,
         },
         paint: { 'text-color': colours.squareText, 'text-halo-color': '#ffffff', 'text-halo-width': 1.5 },
       },

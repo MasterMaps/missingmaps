@@ -38,3 +38,9 @@ export interface Dataset {
 }
 
 export type Bbox = [number, number, number, number]
+
+/** Written by the tile build: what ended up in the archive, per project. */
+export interface TileSummary {
+  generated: string
+  projects: Record<number, { features: number; squares: number; bbox: Bbox | null }>
+}

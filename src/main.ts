@@ -3,8 +3,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import './style.css'
 
 import { HighlightMap } from './map'
-import { busiestArea } from './hotspots'
-import type { Bbox, Dataset, Project } from './types'
+import type { Bbox, Dataset, Project, TileSummary } from './types'
 
 const el = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
 
@@ -16,14 +15,22 @@ const statusEl = el<HTMLDivElement>('status')
 const map = new HighlightMap(el('map'), `${import.meta.env.BASE_URL}tiles/iugnorge.pmtiles`)
 
 let dataset: Dataset
+/** Per-project feature counts and extents, written by the tile build. */
+let summary: TileSummary['projects'] = {}
 let current: Project | undefined
 
 /* -------------------------------------------------------------- bootstrap */
 
 async function start() {
-  const res = await fetch(`${import.meta.env.BASE_URL}data/projects.json`)
+  const [res, tiles] = await Promise.all([
+    fetch(`${import.meta.env.BASE_URL}data/projects.json`),
+    fetch(`${import.meta.env.BASE_URL}data/tiles.json`),
+  ])
   if (!res.ok) throw new Error(`Could not load the project list (HTTP ${res.status})`)
   dataset = await res.json()
+  // Absent before the first tile build; the app still works, it just cannot
+  // tell which projects have anything to show.
+  if (tiles.ok) summary = ((await tiles.json()) as TileSummary).projects ?? {}
 
   el('hashtag').textContent = `#${dataset.hashtag}`
   el('dataset-note').textContent =
@@ -39,7 +46,10 @@ async function start() {
     const option = document.createElement('option')
     option.value = String(project.id)
     // Date first: the list is ordered by it, so it should be the thing you scan.
-    option.textContent = `${shortDate(project.lastEdit)} · ${project.name ?? `Project ${project.id}`}`
+    const count = summary[project.id]?.features
+    option.textContent =
+      `${shortDate(project.lastEdit)} · ${project.name ?? `Project ${project.id}`}` +
+      (count ? ` (${count.toLocaleString()})` : '')
     projectSelect.append(option)
   }
 
@@ -64,12 +74,17 @@ async function start() {
 }
 
 /**
- * Projects the group actually has changesets for, most recently mapped first —
- * the last mapathon is the one people want to look at.
+ * Projects with something on the map, most recently mapped first — the last
+ * mapathon is the one people want to look at.
+ *
+ * A handful of projects are a single stray changeset that left nothing behind,
+ * or whose work was place names rather than buildings; listing them only offers
+ * an empty map. Before the first tile build nothing is known, so list them all.
  */
 const withEdits = (projects: Project[]) =>
   projects
     .filter((p) => p.changesets.length)
+    .filter((p) => !Object.keys(summary).length || (summary[p.id]?.features ?? 0) > 0)
     .sort((a, b) => (b.lastEdit ?? '').localeCompare(a.lastEdit ?? ''))
 
 /* ---------------------------------------------------------------- project */
@@ -94,11 +109,10 @@ function select(id: number | null) {
   }
 }
 
+/** Frames the whole of what the group mapped, not a guess at where it is. */
 function frame(project: Project) {
-  const spot = busiestArea(project, 0)
-  if (spot) map.zoomTo([spot[0] - 0.02, spot[1] - 0.02, spot[0] + 0.02, spot[1] + 0.02], { maxZoom: 15 })
-  else if (project.editBbox) map.zoomTo(project.editBbox, { maxZoom: 15 })
-  else if (project.bbox) map.zoomTo(project.bbox, { maxZoom: 15 })
+  const extent = summary[project.id]?.bbox ?? project.editBbox ?? project.bbox
+  if (extent) map.zoomTo(extent, { padding: 48, maxZoom: 16 })
   backButton.hidden = true
   setStatus('Click a square to zoom into it', 'hint')
 }
