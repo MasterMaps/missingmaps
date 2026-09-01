@@ -36,21 +36,11 @@ export function highlightLayers(tilesUrl: string): {
         'source-layer': 'tasks',
         paint: {
           'fill-color': colours.square,
-          // Squares with more of our work in them read as more solid. The
-          // counts are steeply skewed — median 8, p90 48, one square at 423 —
-          // so the ramp is on the square root and saturates near p95. A linear
-          // 0-400 ramp put 99% of squares in the bottom third, which read as
-          // random darkness rather than as a scale.
-          'fill-opacity': [
-            'interpolate',
-            ['linear'],
-            ['sqrt', ['coalesce', ['get', 'edits'], 0]],
-            1, 0.05,
-            3, 0.11,
-            5, 0.16,
-            8, 0.23,
-            12, 0.3,
-          ],
+          // Uniform, and light. Shading by edit count was tried and read as a
+          // rendering fault rather than as a scale — the first person to see it
+          // asked whether the darker squares were being drawn twice. The counts
+          // live on the label and on click instead, where they are unambiguous.
+          'fill-opacity': 0.1,
         },
       },
       {
@@ -120,20 +110,6 @@ export function highlightLayers(tilesUrl: string): {
         'source-layer': 'buildings',
         minzoom: 15,
         paint: { 'line-color': colours.buildingLine, 'line-width': 0.6 },
-      },
-      // At overview zooms individual buildings vanish into nothing, so give
-      // them a dot that survives being 20 cm wide on screen.
-      {
-        id: 'our-buildings-dot',
-        type: 'circle',
-        source: TILES_SOURCE,
-        'source-layer': 'buildings',
-        maxzoom: 13,
-        paint: {
-          'circle-color': colours.building,
-          'circle-opacity': 0.5,
-          'circle-radius': ['interpolate', ['linear'], ['zoom'], 6, 1, 12, 2.5],
-        },
       },
     ],
   }
