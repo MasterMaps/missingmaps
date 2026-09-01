@@ -135,6 +135,37 @@ async function overpass(data, label) {
 }
 
 /**
+ * Every way in one box — and all of them, not just as many as Overpass felt
+ * like returning.
+ *
+ * An oversized query does not fail. It comes back HTTP 200 with a partial
+ * element list and a `remark` saying it gave up, and accepting that silently is
+ * how an earlier build undercounted by a factor of three while looking healthy.
+ * So a remark means the box was too big: quarter it and ask again.
+ */
+async function fetchArea(bbox, label, depth = 0) {
+  const body = await overpass(query(bbox), label)
+  if (!body.remark) return body.elements || []
+  if (depth >= 3) throw new Error(`${label}: ${body.remark}`)
+
+  console.log(`    partial result, splitting: ${body.remark.slice(0, 70)}`)
+  const [w, s, e, n] = bbox
+  const midX = (w + e) / 2
+  const midY = (s + n) / 2
+  const elements = []
+  for (const quarter of [
+    [w, s, midX, midY],
+    [midX, s, e, midY],
+    [w, midY, midX, n],
+    [midX, midY, e, n],
+  ]) {
+    elements.push(...(await fetchArea(quarter, label, depth + 1)))
+    await sleep(1000)
+  }
+  return elements
+}
+
+/**
  * The boxes to ask Overpass about: one per populated cell of the grid the
  * group's changesets fall into, grown by a margin so features near a cell edge
  * are not clipped off.
@@ -275,8 +306,7 @@ async function extract(project, label) {
 
   for (const [i, piece] of pieces.entries()) {
     const suffix = pieces.length > 1 ? ` [${i + 1}/${pieces.length}]` : ''
-    const body = await overpass(query(piece), `${label}${suffix}`)
-    for (const el of body.elements || []) {
+    for (const el of await fetchArea(piece, `${label}${suffix}`)) {
       if (el.type !== 'way' || !el.geometry || el.geometry.length < 2) continue
       if (!ourChangesets.has(el.changeset)) continue
       ours.push(el)
