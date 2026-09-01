@@ -340,21 +340,23 @@ const perProject = {}
 async function extract(project, label) {
   const ourChangesets = new Set(project.changesets)
   const pieces = queryAreas(project)
-  const ours = []
+  // Keyed by way id: the margin makes neighbouring boxes overlap by more than
+  // the stride between them, so most ways come back from several of them.
+  const ours = new Map()
 
   for (const [i, piece] of pieces.entries()) {
     const suffix = pieces.length > 1 ? ` [${i + 1}/${pieces.length}]` : ''
     for (const el of await fetchArea(piece, `${label}${suffix}`)) {
       if (el.type !== 'way' || !el.geometry || el.geometry.length < 2) continue
       if (!ourChangesets.has(el.changeset)) continue
-      ours.push(el)
+      ours.set(el.id, el)
     }
     await sleep(500) // one query at a time, with a pause, is a polite client.
   }
 
   const features = Object.fromEntries(layers.map((l) => [l, []]))
   const points = []
-  for (const el of ours) {
+  for (const el of ours.values()) {
     const converted = toFeature(el, project.id)
     if (!converted) continue
     const [layer, properties, geometry] = converted
