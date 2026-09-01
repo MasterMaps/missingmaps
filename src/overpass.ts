@@ -117,16 +117,21 @@ async function request(query: string, signal?: AbortSignal): Promise<{ elements:
   )
 }
 
+/**
+ * A cancelled request does not free the Overpass slot it was using — the server
+ * keeps running the query to completion. Panning around therefore exhausts the
+ * two-slot allowance easily, and the answer is patience rather than hammering.
+ */
+const BACKOFF_MS = [4000, 12000, 25000]
+
 async function ask(endpoint: string, query: string, signal?: AbortSignal, attempt = 0): Promise<{ elements: OverpassWay[] }> {
   const res = await fetch(endpoint, { method: 'POST', body: new URLSearchParams({ data: query }), signal })
   if (res.ok) return res.json()
   if (!RETRYABLE.includes(res.status)) throw new Error(`HTTP ${res.status}`)
 
-  // One quick retry, then let the caller try the next instance instead of
-  // sitting here waiting on a server that has already said it is overloaded.
-  if (attempt === 0) {
-    await delay(3000, signal)
-    return ask(endpoint, query, signal, 1)
+  if (attempt < BACKOFF_MS.length) {
+    await delay(BACKOFF_MS[attempt], signal)
+    return ask(endpoint, query, signal, attempt + 1)
   }
   throw new Error('busy')
 }

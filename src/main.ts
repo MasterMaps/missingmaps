@@ -3,7 +3,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import './style.css'
 
 import { Compare } from './compare'
-import { contains, fetchSnapshot, padBbox } from './overpass'
+import { contains, fetchSnapshot, padBbox, type Snapshot } from './overpass'
 import { busiestArea } from './hotspots'
 import type { Bbox, Dataset, Project } from './types'
 
@@ -173,15 +173,28 @@ async function refresh() {
   const controller = new AbortController()
   inFlight = controller
   const bbox = padBbox(viewport)
-  setStatus('Loading OpenStreetMap history…', 'busy')
+
+  // Reconstructing history takes Overpass a while, so say how long we have been
+  // waiting rather than showing a message that looks stuck.
+  const started = Date.now()
+  const tick = () => {
+    const seconds = Math.round((Date.now() - started) / 1000)
+    setStatus(`Loading OpenStreetMap history…${seconds > 2 ? ` ${seconds}s` : ''}`, 'busy')
+  }
+  tick()
+  const ticker = window.setInterval(tick, 1000)
+  // Cancelling a query does not free the Overpass slot, so let one finish
+  // before offering the next jump.
+  anotherArea.disabled = true
 
   try {
-    // Sequential on purpose: Overpass allows very few concurrent slots per client.
-    const past = await fetchSnapshot(bbox, before, controller.signal)
-    const now = await fetchSnapshot(bbox, null, controller.signal)
+    // Two requests is exactly Overpass's per-client slot limit, so run them
+    // together and paint each pane the moment its own half lands.
+    const [past, now] = await Promise.all([
+      fetchSnapshot(bbox, before, controller.signal).then(paint(compare.before, controller)),
+      fetchSnapshot(bbox, null, controller.signal).then(paint(compare.after, controller)),
+    ])
     if (controller.signal.aborted) return
-    compare.before.setSnapshot(past)
-    compare.after.setSnapshot(now)
     showing = { bbox, date: beforeInput.value }
 
     const added = now.stats.buildings - past.stats.buildings
@@ -194,8 +207,21 @@ async function refresh() {
   } catch (err) {
     if ((err as Error).name === 'AbortError') return
     setStatus((err as Error).message, 'error')
+  } finally {
+    window.clearInterval(ticker)
+    anotherArea.disabled = !hasSeveralAreas(current)
   }
 }
+
+const hasSeveralAreas = (project: Project | undefined) => (project?.editPoints?.length ?? 0) > 1
+
+/** Draws a snapshot into one pane as soon as it arrives, unless we were cancelled. */
+const paint =
+  (pane: Compare['before'], controller: AbortController) =>
+  <T extends Snapshot>(snapshot: T) => {
+    if (!controller.signal.aborted) pane.setSnapshot(snapshot)
+    return snapshot
+  }
 
 /* ------------------------------------------------------------------- misc */
 
