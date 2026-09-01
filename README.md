@@ -67,10 +67,19 @@ when the server says it is busy.
 The "before" date defaults to the day before the Tasking Manager project opened, and can be
 changed to any date back to 2007.
 
-> **Rate limits are per IP.** Overpass allows two concurrent queries per client and blocks
-> clients that hammer it. That is ample for one person exploring, but a room full of people on
-> the same venue wifi shares one budget — for a mapathon, drive the comparison from one screen
-> rather than asking everyone to open it at once.
+> **Rate limits are per IP.** Overpass allows two concurrent queries per client, and clients that
+> query too hard get firewalled at the network layer for a while — not a 429, the connection just
+> stops opening. That is ample for one person exploring, but a room full of people on the same
+> venue wifi shares one budget, so for a mapathon drive the comparison from one screen rather
+> than asking everyone to open it at once.
+
+There is one fallback instance for exactly that situation, and only one, because a browser needs
+an instance that serves history *and* sends CORS headers. Of the public mirrors, kumi,
+private.coffee, osm.jp and nchc.org.tw send no CORS headers, and openstreetmap.fr and osm.ch
+answer attic queries with nothing. That leaves `overpass-api.de` and a mail.ru mirror, listed in
+`ENDPOINTS` in [`src/overpass.ts`](src/overpass.ts). The first one that answers is kept for the
+rest of the session so both panes come from the same database. Drop the second entry if you would
+rather not depend on it — the app still works, just without a fallback.
 
 ## Running it
 

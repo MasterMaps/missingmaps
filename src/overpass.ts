@@ -2,12 +2,27 @@ import type { Feature, FeatureCollection, LineString, Polygon } from 'geojson'
 import type { Bbox } from './types'
 
 /**
- * Both snapshots go to the main Overpass instance, and there is no fallback:
- * it is the only public one that both answers historical ("attic") queries and
- * sends CORS headers, which a page on GitHub Pages needs. The mirrors fail one
- * test or the other. Queries are therefore kept to a single map viewport.
+ * A page on GitHub Pages needs an instance that answers historical ("attic")
+ * queries *and* sends CORS headers. Most public mirrors fail one test or the
+ * other — kumi, private.coffee, osm.jp and nchc.org.tw have no CORS headers;
+ * openstreetmap.fr and osm.ch have CORS but no history. These two pass both.
+ *
+ * They are tried in order and the first one that answers is kept for the rest
+ * of the session, so the two panes always come from the same database.
+ *
+ * The second is a mirror run by mail.ru. It is here because it is the only
+ * other instance that qualifies, and overpass-api.de firewalls clients that
+ * query too often — losing it would otherwise take the whole app down. Delete
+ * the line if you would rather not depend on it; the app still works, with no
+ * fallback.
  */
-const OVERPASS = 'https://overpass-api.de/api/interpreter'
+const ENDPOINTS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
+]
+
+/** Index into ENDPOINTS of whichever instance last answered. */
+let preferred = 0
 
 export interface Snapshot {
   /** Landuse, water bodies and green space — drawn underneath everything else. */
@@ -79,35 +94,51 @@ export async function fetchSnapshot(bbox: Bbox, at: Date | null, signal?: AbortS
 /** 429 means all our query slots are busy, 504 that the instance is overloaded; both pass. */
 const RETRYABLE = [429, 504]
 
-async function request(query: string, signal?: AbortSignal, attempt = 0): Promise<{ elements: OverpassWay[] }> {
-  let res: Response
-  try {
-    res = await fetch(OVERPASS, { method: 'POST', body: new URLSearchParams({ data: query }), signal })
-  } catch (err) {
-    if ((err as Error).name === 'AbortError') throw err
-    // A network-level failure here usually means Overpass has cut us off for
-    // querying too often, which reads as a CORS or "failed to fetch" error.
-    throw new Error('Could not reach the Overpass API — it may be throttling this browser. Try again shortly.')
-  }
-  if (res.ok) return res.json()
+/** Tries each instance in turn, sticking with the one that answers. */
+async function request(query: string, signal?: AbortSignal): Promise<{ elements: OverpassWay[] }> {
+  let busy = false
 
-  if (RETRYABLE.includes(res.status) && attempt < 2) {
-    await new Promise((resolve, reject) => {
-      const timer = setTimeout(resolve, 4000 * (attempt + 1))
-      signal?.addEventListener('abort', () => {
-        clearTimeout(timer)
-        reject(new DOMException('Aborted', 'AbortError'))
-      })
-    })
-    return request(query, signal, attempt + 1)
+  for (let i = 0; i < ENDPOINTS.length; i++) {
+    const index = (preferred + i) % ENDPOINTS.length
+    try {
+      const body = await ask(ENDPOINTS[index], query, signal)
+      preferred = index
+      return body
+    } catch (err) {
+      if ((err as Error).name === 'AbortError') throw err
+      if ((err as Error).message === 'busy') busy = true
+    }
   }
 
   throw new Error(
-    RETRYABLE.includes(res.status)
-      ? 'Overpass is busy right now — pan the map or try again in a minute.'
-      : `Overpass returned ${res.status}.`,
+    busy
+      ? 'Every Overpass instance is busy right now — try again in a minute.'
+      : 'Could not reach any Overpass instance. They rate-limit heavy use, so give it a few minutes.',
   )
 }
+
+async function ask(endpoint: string, query: string, signal?: AbortSignal, attempt = 0): Promise<{ elements: OverpassWay[] }> {
+  const res = await fetch(endpoint, { method: 'POST', body: new URLSearchParams({ data: query }), signal })
+  if (res.ok) return res.json()
+  if (!RETRYABLE.includes(res.status)) throw new Error(`HTTP ${res.status}`)
+
+  // One quick retry, then let the caller try the next instance instead of
+  // sitting here waiting on a server that has already said it is overloaded.
+  if (attempt === 0) {
+    await delay(3000, signal)
+    return ask(endpoint, query, signal, 1)
+  }
+  throw new Error('busy')
+}
+
+const delay = (ms: number, signal?: AbortSignal) =>
+  new Promise<void>((resolve, reject) => {
+    const timer = setTimeout(resolve, ms)
+    signal?.addEventListener('abort', () => {
+      clearTimeout(timer)
+      reject(new DOMException('Aborted', 'AbortError'))
+    })
+  })
 
 /** Grows a viewport by `factor` so that small pans stay inside what we already fetched. */
 export function padBbox(bbox: Bbox, factor = 0.25): Bbox {
