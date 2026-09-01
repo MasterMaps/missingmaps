@@ -44,6 +44,11 @@ export class HighlightMap {
     )
 
     this.map.on('load', () => {
+      // A globe suits the "everywhere we have mapped" view — the work is spread
+      // across four continents and a flat map exaggerates the spread. MapLibre
+      // eases into mercator on its own as you zoom into a project.
+      this.map.setProjection({ type: 'globe' })
+
       const { source, layers } = highlightLayers(tilesUrl)
       this.map.addSource(TILES_SOURCE, source as never)
       for (const layer of layers) this.map.addLayer(layer)
@@ -77,6 +82,11 @@ export class HighlightMap {
         project: Number(feature.properties?.project),
       })
     })
+  }
+
+  /** Pulls back to the whole globe rather than fitting a world-sized bbox. */
+  showWorld() {
+    this.map.easeTo({ center: [12, 8], zoom: 1.5, duration: 900 })
   }
 
   zoomTo(bbox: Bbox, options: { padding?: number; maxZoom?: number; duration?: number } = {}) {

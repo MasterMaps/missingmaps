@@ -104,7 +104,7 @@ function select(id: number | null) {
 
   if (current) frame(current)
   else {
-    map.zoomTo([-160, -50, 175, 65], { padding: 20, maxZoom: 3 })
+    map.showWorld()
     setStatus('Pick a project, or click any square to zoom in', 'hint')
   }
 }
