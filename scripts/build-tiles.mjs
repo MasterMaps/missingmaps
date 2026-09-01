@@ -74,6 +74,28 @@ const query = (bbox) => {
 out meta geom;`
 }
 
+/**
+ * How long to wait for a query slot, straight from Overpass.
+ *
+ * Guessing is expensive: a blind 30/60/90s ladder spent two thirds of an
+ * earlier run asleep. Overpass publishes exactly when the next slot frees, and
+ * it is usually seconds away.
+ */
+async function slotWait() {
+  try {
+    const res = await fetch(`${OVERPASS.replace('/interpreter', '/status')}`, {
+      headers: { 'User-Agent': UA },
+    })
+    const text = await res.text()
+    if (/slots? available now/i.test(text)) return 2000
+    const seconds = [...text.matchAll(/in (-?\d+) seconds/g)].map((m) => Number(m[1]))
+    if (seconds.length) return Math.min(Math.max(...seconds.map((s) => Math.max(s, 0)), 1) + 1, 180) * 1000
+  } catch {
+    // fall through
+  }
+  return 15_000
+}
+
 async function overpass(data, label) {
   for (let attempt = 0; ; attempt++) {
     let res
@@ -84,14 +106,16 @@ async function overpass(data, label) {
         body: new URLSearchParams({ data }),
       })
     } catch (err) {
-      if (attempt >= 5) throw new Error(`${label}: ${err.message}`)
+      if (attempt >= 8) throw new Error(`${label}: ${err.message}`)
       await sleep(30_000)
       continue
     }
     if (res.ok) return res.json()
-    if (![429, 504].includes(res.status) || attempt >= 5) throw new Error(`${label}: HTTP ${res.status}`)
-    const wait = Number(res.headers.get('retry-after')) * 1000 || 30_000 * (attempt + 1)
-    console.log(`    busy, waiting ${Math.round(wait / 1000)}s`)
+    if (![429, 504].includes(res.status) || attempt >= 8) throw new Error(`${label}: HTTP ${res.status}`)
+
+    const retryAfter = Number(res.headers.get('retry-after')) * 1000
+    const wait = retryAfter || (await slotWait())
+    console.log(`    no slot, waiting ${Math.round(wait / 1000)}s`)
     await sleep(wait)
   }
 }
