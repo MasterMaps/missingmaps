@@ -1,8 +1,8 @@
-# #iugnorge before & after
+# What #iugnorge mapped
 
-A static web app that shows what **#iugnorge** has added to OpenStreetMap: pick one of the
-HOT Tasking Manager projects the group has mapped, and see the same area side by side as it
-stood before the project started and as it stands today.
+A static web app that shows what **#iugnorge** has put on OpenStreetMap: pick one of the HOT
+Tasking Manager projects the group has mapped and every building, road and waterway they added
+lights up on the map, inside the task squares they worked in. Click a square to zoom into it.
 
 Live at **https://mastermaps.github.io/missingmaps/**
 
@@ -46,40 +46,39 @@ Nothing else can do this from the browser: OSMCha needs a token, and the Tasking
 only sends CORS headers to `tasks.hotosm.org`. So the project list is built in CI and committed
 as a static JSON file, and the app itself stays a pure frontend.
 
-### Drawing before and after
+### Drawing the highlights
 
-No tile server publishes historical raster tiles, so the "before" side cannot be a normal
-basemap. Instead both panes render from GeoJSON that the app fetches live from the
-[Overpass API](https://overpass-api.de), using an _attic_ query for the past:
+The map is an ordinary [OpenFreeMap](https://openfreemap.org/) basemap — keyless and
+CORS-enabled, both required for a page on GitHub Pages — with one PMTiles archive drawn on top.
 
-```
-[out:json][date:"2026-08-30T00:00:00Z"];
-way["building"](bbox); ...
-out geom;
-```
+That archive holds **only the group's own work**: ways whose current version belongs to one of
+our `#iugnorge` changesets, plus the Tasking Manager task squares that contain at least one of
+them. Everything else is basemap. Holding only our features instead of full before/after
+snapshots is the difference between a few MB and a few hundred, which is what makes covering
+every project affordable.
 
-Both panes share one hand-written MapLibre style, so any visible difference is a real
-difference in the data. `overpass-api.de` is the only public instance that answers historical
-queries _and_ sends CORS headers, so it is the single upstream — the app queries one map
-viewport at a time, caches every answer, pads the box so small pans stay free, and backs off
-when the server says it is busy.
+It also means the app makes **no live data queries at all**. An earlier version rendered a
+before/after pair straight from Overpass attic queries; it worked, but Overpass allows two
+concurrent queries per client and firewalls clients that lean on it — not a 429, the connection
+simply stops opening. A room of mapathon participants on one venue wifi shares that budget. Tiles
+sidestep the problem entirely: the extraction happens once, in CI, on a clean address.
 
-The "before" date defaults to the day before the Tasking Manager project opened, and can be
-changed to any date back to 2007.
+[`scripts/build-tiles.mjs`](scripts/build-tiles.mjs) builds the archive. Two details are worth
+knowing:
 
-> **Rate limits are per IP.** Overpass allows two concurrent queries per client, and clients that
-> query too hard get firewalled at the network layer for a while — not a 429, the connection just
-> stops opening. That is ample for one person exploring, but a room full of people on the same
-> venue wifi shares one budget, so for a mapathon drive the comparison from one screen rather
-> than asking everyone to open it at once.
+- **Query areas follow the changesets, not the project boundary.** Tasking Manager areas of
+  interest can span a national border region; one of ours needs 1248 quarter-degree tiles to
+  cover, to find edits sitting in two of them. Binning the recorded changeset locations into
+  0.05° cells and querying each populated cell with a 3 km margin takes a full run from 1784
+  queries to 518. The trade-off is that a changeset whose edits sprawl more than 3 km from its
+  centre could lose features at the fringe — task squares are about 1 km, so this should be
+  comfortably safe.
+- **Attribution is by the changeset that last touched a way.** Exact for anything nobody has
+  edited since, an undercount otherwise: a building we drew and a validator later squared off
+  now belongs to their changeset. It undercounts; it never claims someone else's work.
 
-There is one fallback instance for exactly that situation, and only one, because a browser needs
-an instance that serves history *and* sends CORS headers. Of the public mirrors, kumi,
-private.coffee, osm.jp and nchc.org.tw send no CORS headers, and openstreetmap.fr and osm.ch
-answer attic queries with nothing. That leaves `overpass-api.de` and a mail.ru mirror, listed in
-`ENDPOINTS` in [`src/overpass.ts`](src/overpass.ts). The first one that answers is kept for the
-rest of the session so both panes come from the same database. Drop the second entry if you would
-rather not depend on it — the app still works, just without a fallback.
+Tiles are rebuilt by the **Build map tiles** workflow, which is manual — run it after a mapathon,
+optionally with `only` set to just the project ids that changed.
 
 ## Running it
 
@@ -87,6 +86,8 @@ rather not depend on it — the app still works, just without a fallback.
 npm install
 npm run dev            # http://localhost:5173/missingmaps/
 npm run build
+
+node scripts/build-tiles.mjs --only 63366   # rebuild tiles for one project
 
 npm run ingest                        # scan the last ~26 h of changesets
 node scripts/ingest.mjs planet        # full history from the changeset dump
@@ -127,11 +128,15 @@ To set the token up:
 ### Automation
 
 - **Update project list** — every six hours, scans new changesets and commits the JSON if it changed.
-- **Deploy to GitHub Pages** — builds and publishes on every push to `main`, including the data commits.
+- **Build map tiles** — manual. Needs `tippecanoe`, which it builds from source; takes roughly an
+  hour for all projects, most of it waiting on Overpass query slots.
+- **Deploy to GitHub Pages** — builds and publishes on every push to `main`, including the commits
+  the other two make.
 
 Enable Pages once under _Settings → Pages → Source: GitHub Actions_.
 
 ## Attribution
 
 Map data © OpenStreetMap contributors, [ODbL](https://www.openstreetmap.org/copyright).
-History via the Overpass API, project metadata via the HOT Tasking Manager.
+Basemap by [OpenFreeMap](https://openfreemap.org/), extraction via the
+[Overpass API](https://overpass-api.de), project metadata via the HOT Tasking Manager.
