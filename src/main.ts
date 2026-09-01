@@ -2,33 +2,21 @@ import './maplibre-worker'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import './style.css'
 
-import { Compare } from './compare'
-import { contains, fetchSnapshot, padBbox, type Snapshot } from './overpass'
+import { HighlightMap } from './map'
 import { busiestArea } from './hotspots'
 import type { Bbox, Dataset, Project } from './types'
-
-/** Below this zoom a viewport query would ask Overpass for a whole city. */
-const MIN_ZOOM = 14
-const DEBOUNCE_MS = 700
 
 const el = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
 
 const projectSelect = el<HTMLSelectElement>('project')
-const beforeInput = el<HTMLInputElement>('before-date')
-const anotherArea = el<HTMLButtonElement>('another-area')
-const statusEl = el<HTMLDivElement>('status')
+const backButton = el<HTMLButtonElement>('back')
 const infoEl = el<HTMLDivElement>('project-info')
+const statusEl = el<HTMLDivElement>('status')
 
-const compare = new Compare(el('pane-before'), el('pane-after'))
+const map = new HighlightMap(el('map'), `${import.meta.env.BASE_URL}tiles/iugnorge.pmtiles`)
 
 let dataset: Dataset
 let current: Project | undefined
-/** Index into the project's hotspot list, so "Another area" can cycle. */
-let hotspotIndex = 0
-let inFlight: AbortController | undefined
-let debounce: number | undefined
-/** What the panes are currently showing, so we do not re-ask Overpass for it. */
-let showing: { bbox: Bbox; date: string } | undefined
 
 /* -------------------------------------------------------------- bootstrap */
 
@@ -42,91 +30,95 @@ async function start() {
     `${dataset.projects.length} projects · ${dataset.mappers.length} mappers · ` +
     `updated ${new Date(dataset.generated).toLocaleDateString('en-GB', { dateStyle: 'medium' })}`
 
-  for (const p of dataset.projects) {
+  const everywhere = document.createElement('option')
+  everywhere.value = ''
+  everywhere.textContent = 'Everywhere we have mapped'
+  projectSelect.append(everywhere)
+
+  for (const project of withEdits(dataset.projects)) {
     const option = document.createElement('option')
-    option.value = String(p.id)
-    option.textContent = `${p.name ?? `Project ${p.id}`} (#${p.id})`
+    option.value = String(project.id)
+    // Date first: the list is ordered by it, so it should be the thing you scan.
+    option.textContent = `${shortDate(project.lastEdit)} · ${project.name ?? `Project ${project.id}`}`
     projectSelect.append(option)
   }
 
-  projectSelect.addEventListener('change', () => selectProject(Number(projectSelect.value)))
-  beforeInput.addEventListener('change', () => void refresh())
-  anotherArea.addEventListener('click', () => {
-    hotspotIndex++
-    frameProject()
-  })
+  projectSelect.addEventListener('change', () => select(Number(projectSelect.value) || null))
+  backButton.addEventListener('click', () => (current ? frame(current) : select(null)))
 
-  compare.onReady(() => {
+  map.onReady(() => {
     const fromUrl = Number(new URLSearchParams(location.search).get('project'))
-    const initial = dataset.projects.find((p) => p.id === fromUrl) ?? dataset.projects[0]
-    projectSelect.value = String(initial.id)
-    selectProject(initial.id)
-    compare.onViewChange(scheduleRefresh)
+    select(dataset.projects.some((p) => p.id === fromUrl) ? fromUrl : null)
   })
 
-  window.addEventListener('resize', () => compare.resize())
-}
+  map.onSquareClick((square) => {
+    map.zoomTo(square.bbox, { padding: 60, maxZoom: 18 })
+    setStatus(
+      `Task ${square.task ?? '—'} · ${square.edits.toLocaleString()} features mapped here`,
+      'good',
+    )
+    backButton.hidden = false
+  })
 
-/* ---------------------------------------------------------------- project */
-
-function selectProject(id: number) {
-  current = dataset.projects.find((p) => p.id === id)
-  if (!current) return
-  hotspotIndex = 0
-  showing = undefined
-
-  beforeInput.value = defaultBeforeDate(current)
-  beforeInput.min = '2007-10-08' // as far back as the Overpass history goes
-  beforeInput.max = new Date().toISOString().slice(0, 10)
-
-  const url = new URL(location.href)
-  url.searchParams.set('project', String(id))
-  history.replaceState(null, '', url)
-
-  renderInfo(current)
-  frameProject()
+  window.addEventListener('resize', () => map.resize())
 }
 
 /**
- * The day before the Tasking Manager project opened. Anything the group mapped
- * happened after that, so this is the honest "before" state.
+ * Projects the group actually has changesets for, most recently mapped first —
+ * the last mapathon is the one people want to look at.
  */
-function defaultBeforeDate(project: Project): string {
-  const anchor = project.created ?? project.firstEdit
-  const date = anchor ? new Date(anchor) : new Date()
-  date.setUTCDate(date.getUTCDate() - 1)
-  return date.toISOString().slice(0, 10)
-}
+const withEdits = (projects: Project[]) =>
+  projects
+    .filter((p) => p.changesets.length)
+    .sort((a, b) => (b.lastEdit ?? '').localeCompare(a.lastEdit ?? ''))
 
-function frameProject() {
-  if (!current) return
-  const spot = busiestArea(current, hotspotIndex)
-  anotherArea.disabled = !current.editPoints || current.editPoints.length < 2
+/* ---------------------------------------------------------------- project */
 
-  if (spot) {
-    compare.flyTo(spot, 16)
-  } else if (current.editBbox) {
-    compare.fitBounds(current.editBbox)
-  } else if (current.tmCentroid ?? current.centre) {
-    compare.flyTo((current.tmCentroid ?? current.centre)!, 16)
-  } else if (current.bbox) {
-    compare.fitBounds(current.bbox)
+function select(id: number | null) {
+  current = id === null ? undefined : dataset.projects.find((p) => p.id === id)
+  projectSelect.value = current ? String(current.id) : ''
+  backButton.hidden = true
+
+  const url = new URL(location.href)
+  if (current) url.searchParams.set('project', String(current.id))
+  else url.searchParams.delete('project')
+  history.replaceState(null, '', url)
+
+  map.filterToProject(current?.id ?? null)
+  renderInfo(current)
+
+  if (current) frame(current)
+  else {
+    map.zoomTo([-160, -50, 175, 65], { padding: 20, maxZoom: 3 })
+    setStatus('Pick a project, or click any square to zoom in', 'hint')
   }
-  // The camera jump above emits its own `moveend`; going through the debounce
-  // means the two paths collapse into one query instead of racing.
-  scheduleRefresh()
 }
 
-function renderInfo(project: Project) {
+function frame(project: Project) {
+  const spot = busiestArea(project, 0)
+  if (spot) map.zoomTo([spot[0] - 0.02, spot[1] - 0.02, spot[0] + 0.02, spot[1] + 0.02], { maxZoom: 15 })
+  else if (project.editBbox) map.zoomTo(project.editBbox, { maxZoom: 15 })
+  else if (project.bbox) map.zoomTo(project.bbox, { maxZoom: 15 })
+  backButton.hidden = true
+  setStatus('Click a square to zoom into it', 'hint')
+}
+
+function renderInfo(project: Project | undefined) {
+  if (!project) {
+    const totals = withEdits(dataset.projects)
+    const changesets = totals.reduce((sum, p) => sum + p.changesets.length, 0)
+    const countries = new Set(totals.flatMap((p) => p.countries ?? []))
+    infoEl.innerHTML = `
+      <div><strong>Everywhere we have mapped</strong>
+        <span class="muted">${totals.length} projects · ${countries.size} countries</span></div>
+      <div class="muted">${changesets.toLocaleString()} changesets tagged #${escapeHtml(dataset.hashtag)}</div>`
+    return
+  }
+
   const bits: string[] = []
   if (project.countries?.length) bits.push(project.countries.join(', '))
   if (project.organisation) bits.push(project.organisation)
-  if (project.percentMapped != null) bits.push(`${project.percentMapped}% mapped`)
-
-  const provenance =
-    project.source === 'changesets'
-      ? `${project.changesets.length} #${dataset.hashtag} changesets by ${project.mappers.length} mappers`
-      : `worked on by ${project.mappers.length} of our mappers (from the Tasking Manager)`
+  if (project.firstEdit) bits.push(mappedWhen(project))
 
   infoEl.innerHTML = `
     <div>
@@ -134,98 +126,31 @@ function renderInfo(project: Project) {
       <span class="muted">${bits.map(escapeHtml).join(' · ')}</span>
     </div>
     <div class="muted">
-      ${escapeHtml(provenance)} ·
+      ${project.changesets.length} changesets by ${project.mappers.length} mappers ·
       <a href="https://tasks.hotosm.org/projects/${project.id}" target="_blank" rel="noreferrer">
         open in Tasking Manager
       </a>
     </div>`
 }
 
-/* ------------------------------------------------------------- comparison */
-
-function scheduleRefresh() {
-  window.clearTimeout(debounce)
-  debounce = window.setTimeout(() => void refresh(), DEBOUNCE_MS)
-}
-
-async function refresh() {
-  if (!current) return
-
-  if (compare.zoom < MIN_ZOOM) {
-    setStatus(`Zoom in to load the comparison (zoom ${MIN_ZOOM}+)`, 'hint')
-    compare.before.setSnapshot(null)
-    compare.after.setSnapshot(null)
-    showing = undefined
-    return
-  }
-
-  const before = new Date(`${beforeInput.value}T00:00:00Z`)
-  if (Number.isNaN(before.getTime())) return
-
-  compare.before.setDate(before.toLocaleDateString('en-GB', { dateStyle: 'medium' }))
-  compare.after.setDate('today')
-
-  // Panning inside data we already have is free; only leaving it costs a query.
-  const viewport = compare.bbox
-  if (showing && showing.date === beforeInput.value && contains(showing.bbox, viewport)) return
-
-  inFlight?.abort()
-  const controller = new AbortController()
-  inFlight = controller
-  const bbox = padBbox(viewport)
-
-  // Reconstructing history takes Overpass a while, so say how long we have been
-  // waiting rather than showing a message that looks stuck.
-  const started = Date.now()
-  const tick = () => {
-    const seconds = Math.round((Date.now() - started) / 1000)
-    setStatus(`Loading OpenStreetMap history…${seconds > 2 ? ` ${seconds}s` : ''}`, 'busy')
-  }
-  tick()
-  const ticker = window.setInterval(tick, 1000)
-  // Cancelling a query does not free the Overpass slot, so let one finish
-  // before offering the next jump.
-  anotherArea.disabled = true
-
-  try {
-    // Two requests is exactly Overpass's per-client slot limit, so run them
-    // together and paint each pane the moment its own half lands.
-    const [past, now] = await Promise.all([
-      fetchSnapshot(bbox, before, controller.signal).then(paint(compare.before, controller)),
-      fetchSnapshot(bbox, null, controller.signal).then(paint(compare.after, controller)),
-    ])
-    if (controller.signal.aborted) return
-    showing = { bbox, date: beforeInput.value }
-
-    const added = now.stats.buildings - past.stats.buildings
-    setStatus(
-      added > 0
-        ? `+${added.toLocaleString()} buildings in this view since ${beforeInput.value}`
-        : 'No change in building count in this view',
-      added > 0 ? 'good' : 'hint',
-    )
-  } catch (err) {
-    if ((err as Error).name === 'AbortError') return
-    setStatus((err as Error).message, 'error')
-  } finally {
-    window.clearInterval(ticker)
-    anotherArea.disabled = !hasSeveralAreas(current)
-  }
-}
-
-const hasSeveralAreas = (project: Project | undefined) => (project?.editPoints?.length ?? 0) > 1
-
-/** Draws a snapshot into one pane as soon as it arrives, unless we were cancelled. */
-const paint =
-  (pane: Compare['before'], controller: AbortController) =>
-  <T extends Snapshot>(snapshot: T) => {
-    if (!controller.signal.aborted) pane.setSnapshot(snapshot)
-    return snapshot
-  }
-
 /* ------------------------------------------------------------------- misc */
 
-function setStatus(message: string, kind: 'busy' | 'error' | 'good' | 'hint') {
+const monthYear = (iso: string) =>
+  new Date(iso).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+
+/** A single mapathon reads as one date; a longer campaign as a span of months. */
+function mappedWhen({ firstEdit, lastEdit }: Project) {
+  if (!firstEdit) return ''
+  if (!lastEdit || firstEdit.slice(0, 10) === lastEdit.slice(0, 10)) return `mapped ${shortDate(firstEdit)}`
+  const from = monthYear(firstEdit)
+  const to = monthYear(lastEdit)
+  return from === to ? `mapped ${from}` : `mapped ${from} – ${to}`
+}
+
+const shortDate = (iso: string | undefined) =>
+  iso ? new Date(iso).toLocaleDateString('en-GB', { dateStyle: 'medium' }) : 'undated'
+
+function setStatus(message: string, kind: 'error' | 'good' | 'hint') {
   statusEl.textContent = message
   statusEl.className = `status status-${kind}`
   statusEl.hidden = false
@@ -233,5 +158,7 @@ function setStatus(message: string, kind: 'busy' | 'error' | 'good' | 'hint') {
 
 const escapeHtml = (s: string) =>
   s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!)
+
+export type { Bbox }
 
 start().catch((err: Error) => setStatus(err.message, 'error'))

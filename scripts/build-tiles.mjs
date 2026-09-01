@@ -16,7 +16,7 @@
  * drew and someone else later squared off now belongs to their changeset. It
  * undercounts; it never claims someone else's work.
  *
- * Runs in CI: it queries Overpass once per project area, and Overpass firewalls
+ * Runs in CI: it makes a few hundred Overpass queries, and Overpass firewalls
  * clients that do that from a shared address.
  *
  * Usage:
@@ -35,7 +35,16 @@ const OVERPASS = 'https://overpass-api.de/api/interpreter'
 const TM_API = 'https://tasking-manager-production-api.hotosm.org/api/v2'
 const UA = 'missingmaps-iug/1.0 (+https://github.com/MasterMaps/missingmaps)'
 
-/** Overpass struggles with very large areas, so big AOIs are queried in pieces. */
+/**
+ * Query areas follow the edits, not the project boundary. Tasking Manager areas
+ * of interest can span whole border regions — one of ours needs 1248 quarter-
+ * degree tiles to cover, to find edits that sit in two of them. Binning the
+ * changeset locations instead takes the whole run from 1784 queries to 518.
+ */
+const CELL_DEG = 0.05
+/** Changeset centres are points; this covers the area around each one. */
+const MARGIN_DEG = 0.03
+/** Fallback only, for a project with no recorded changeset locations. */
 const MAX_SPAN_DEG = 0.25
 
 const args = process.argv.slice(2)
@@ -85,6 +94,31 @@ async function overpass(data, label) {
     console.log(`    busy, waiting ${Math.round(wait / 1000)}s`)
     await sleep(wait)
   }
+}
+
+/**
+ * The boxes to ask Overpass about: one per populated cell of the grid the
+ * group's changesets fall into, grown by a margin so features near a cell edge
+ * are not clipped off.
+ */
+function queryAreas(project) {
+  const points = project.editPoints ?? []
+  if (!points.length) return splitBbox(project.bbox ?? project.editBbox)
+
+  const cells = new Map()
+  for (const [lon, lat] of points) {
+    const x = Math.floor(lon / CELL_DEG)
+    const y = Math.floor(lat / CELL_DEG)
+    const key = `${x}/${y}`
+    if (cells.has(key)) continue
+    cells.set(key, [
+      x * CELL_DEG - MARGIN_DEG,
+      y * CELL_DEG - MARGIN_DEG,
+      (x + 1) * CELL_DEG + MARGIN_DEG,
+      (y + 1) * CELL_DEG + MARGIN_DEG,
+    ])
+  }
+  return [...cells.values()]
 }
 
 /** Splits a bbox into pieces no larger than MAX_SPAN_DEG on a side. */
@@ -198,12 +232,11 @@ const streams = Object.fromEntries(layers.map((l) => [l, []]))
 const perProject = {}
 
 for (const [index, project] of projects.entries()) {
-  const bbox = project.bbox ?? project.editBbox
   const label = `#${project.id} ${(project.name || '').slice(0, 40)}`
   console.log(`[${index + 1}/${projects.length}] ${label}`)
 
   const ourChangesets = new Set(project.changesets)
-  const pieces = splitBbox(bbox)
+  const pieces = queryAreas(project)
   const ours = []
 
   try {
@@ -215,7 +248,7 @@ for (const [index, project] of projects.entries()) {
         if (!ourChangesets.has(el.changeset)) continue
         ours.push(el)
       }
-      await sleep(2000) // Overpass allows two slots; one at a time is polite.
+      await sleep(1000) // Overpass allows two slots; one at a time is polite.
     }
   } catch (err) {
     console.warn(`  failed: ${err.message}`)

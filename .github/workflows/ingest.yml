@@ -48,4 +48,5 @@ jobs:
           git add public/data/projects.json
           git diff --cached --quiet && echo 'no new projects or changesets' && exit 0
           git commit -m 'data: refresh #iugnorge project list'
+          git pull --rebase --autostash
           git push

@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Before & After — #iugnorge</title>
+    <title>What we mapped — #iugnorge</title>
     <meta
       name="description"
-      content="Before and after maps for the HOT Tasking Manager projects mapped by Ingeniører Uten Grenser Norge."
+      content="Every building, road and waterway that Ingeniører Uten Grenser Norge has added to OpenStreetMap, highlighted on the map."
     />
     <link
       rel="icon"
@@ -16,9 +16,9 @@
   <body>
     <header class="topbar">
       <div class="brand">
-        <h1>Before <span class="arrow">→</span> After</h1>
+        <h1>What we mapped</h1>
         <p class="tagline">
-          What <code id="hashtag">#iugnorge</code> added to OpenStreetMap
+          Everything <code id="hashtag">#iugnorge</code> has added to OpenStreetMap
         </p>
       </div>
 
@@ -27,26 +27,13 @@
           <span>Project</span>
           <select id="project"></select>
         </label>
-        <label class="field">
-          <span>Before</span>
-          <input type="date" id="before-date" />
-        </label>
-        <button
-          id="another-area"
-          type="button"
-          title="Jump to another area the group mapped"
-        >
-          Another area
-        </button>
+        <button id="back" type="button" hidden>Back to project</button>
       </div>
     </header>
 
     <div id="project-info" class="project-info"></div>
 
-    <main class="panes">
-      <section id="pane-before" class="pane"></section>
-      <section id="pane-after" class="pane"></section>
-    </main>
+    <main id="map" class="map"></main>
 
     <div id="status" class="status" hidden></div>
 
@@ -54,11 +41,8 @@
       <span id="dataset-note"></span>
       <span>
         Map data ©
-        <a href="https://www.openstreetmap.org/copyright"
-          >OpenStreetMap contributors</a
-        >
-        · history via <a href="https://overpass-api.de/">Overpass API</a> ·
-        projects via
+        <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a> · basemap
+        <a href="https://openfreemap.org/">OpenFreeMap</a> · projects via
         <a href="https://tasks.hotosm.org/">HOT Tasking Manager</a>
       </span>
     </footer>

@@ -46,4 +46,5 @@ jobs:
           git diff --cached --quiet && echo 'tiles unchanged' && exit 0
           ls -lh public/tiles
           git commit -m 'tiles: rebuild #iugnorge highlight layer'
+          git pull --rebase --autostash
           git push

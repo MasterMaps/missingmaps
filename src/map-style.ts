@@ -1,178 +1,130 @@
-import type { StyleSpecification } from 'maplibre-gl'
+import type { LayerSpecification, StyleSpecification } from 'maplibre-gl'
 
 /**
- * A small OSM-Carto-flavoured style drawn entirely from GeoJSON we supply.
+ * The map is an ordinary basemap with our own edits drawn on top of it, out of
+ * one PMTiles archive that contains nothing but those edits.
  *
- * Both panes have to use the exact same style — that is the whole point of the
- * comparison — and no tile server publishes historical raster tiles, so the
- * "before" side could never be a normal basemap anyway.
+ * Basemap tiles come from OpenFreeMap, which needs no API key and sends CORS
+ * headers — both required for a page served from GitHub Pages.
  */
 
-/** A fresh object every time: two Map instances must not share source specs. */
-const empty = () => ({ type: 'geojson' as const, data: { type: 'FeatureCollection' as const, features: [] } })
+export const BASEMAP_STYLE = 'https://tiles.openfreemap.org/styles/positron'
+export const TILES_SOURCE = 'iugnorge'
 
-export const SOURCES = ['areas', 'waterways', 'roads', 'buildings'] as const
-export type SourceId = (typeof SOURCES)[number]
-
-const colours = {
-  background: '#f2efe9',
-  water: '#aad3df',
-  wood: '#add19e',
-  green: '#cdebb0',
-  farm: '#eef0d5',
-  built: '#e4dfda',
-  other: '#e8e6e1',
-  buildingFill: '#cdab92',
-  buildingLine: '#a5836b',
-  roadCasing: '#c8c2ba',
-  roadFill: '#ffffff',
-  primary: '#fcd6a4',
-  secondary: '#f7fabf',
-  track: '#ac8331',
-  label: '#5a5147',
-  labelHalo: '#f2efe9',
+export const colours = {
+  building: '#e8590c',
+  buildingLine: '#b34700',
+  road: '#e8590c',
+  water: '#1c7ed6',
+  square: '#e8590c',
+  squareText: '#8a3600',
 }
 
-/** The four zoom stops every line width is interpolated across. */
-const STOPS = [12, 14, 18, 20] as const
-/** Widths are given at z14 and z18; the outer stops are scaled off those. */
-const scale = ([z14, z18]: Pair, zoom: number) =>
-  zoom === 12 ? z14 * 0.4 : zoom === 14 ? z14 : zoom === 18 ? z18 : z18 * 1.6
-
-type Pair = [number, number]
-
-/** Line width in pixels, interpolated over zoom. */
-const width = (z14: number, z18: number) =>
-  ['interpolate', ['exponential', 1.6], ['zoom'], ...STOPS.flatMap((z) => [z, scale([z14, z18], z)])] as never
-
-const MAJOR = ['motorway', 'trunk', 'primary', 'motorway_link', 'trunk_link', 'primary_link']
-const MEDIUM = ['secondary', 'tertiary', 'secondary_link', 'tertiary_link']
-
-/**
- * Per-road-class width. MapLibre allows only one zoom expression per property,
- * so the `case` has to live inside each interpolation stop, not around it.
- */
-const roadWidth = (major: Pair, medium: Pair, minor: Pair) =>
-  [
-    'interpolate',
-    ['exponential', 1.6],
-    ['zoom'],
-    ...STOPS.flatMap((z) => [
-      z,
-      [
-        'case',
-        ['in', ['get', 'kind'], ['literal', MAJOR]], scale(major, z),
-        ['in', ['get', 'kind'], ['literal', MEDIUM]], scale(medium, z),
-        scale(minor, z),
-      ],
-    ]),
-  ] as never
-
-export function createStyle(): StyleSpecification {
+/** The layers we add on top of the basemap, in draw order. */
+export function highlightLayers(tilesUrl: string): {
+  source: StyleSpecification['sources'][string]
+  layers: LayerSpecification[]
+} {
   return {
-    version: 8,
-    glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
-    sources: Object.fromEntries(SOURCES.map((id) => [id, empty()])),
+    source: { type: 'vector', url: `pmtiles://${tilesUrl}`, attribution: '© OpenStreetMap contributors' },
     layers: [
-      { id: 'background', type: 'background', paint: { 'background-color': colours.background } },
-
+      // Task squares sit underneath: they are context for the edits, not the point.
       {
-        id: 'area-fill',
+        id: 'task-fill',
         type: 'fill',
-        source: 'areas',
+        source: TILES_SOURCE,
+        'source-layer': 'tasks',
         paint: {
-          'fill-color': [
-            'match',
-            ['get', 'kind'],
-            'water', colours.water,
-            'wood', colours.wood,
-            'green', colours.green,
-            'farm', colours.farm,
-            'built', colours.built,
-            colours.other,
+          'fill-color': colours.square,
+          // Squares with more of our work in them read as more solid.
+          'fill-opacity': [
+            'interpolate',
+            ['linear'],
+            ['coalesce', ['get', 'edits'], 0],
+            0, 0.04,
+            50, 0.1,
+            400, 0.18,
           ],
-          'fill-opacity': 0.9,
         },
       },
-
       {
-        id: 'waterway-line',
+        id: 'task-outline',
         type: 'line',
-        source: 'waterways',
-        paint: { 'line-color': colours.water, 'line-width': width(1.5, 4) },
-      },
-
-      {
-        id: 'road-casing',
-        type: 'line',
-        source: 'roads',
-        layout: { 'line-cap': 'round', 'line-join': 'round' },
-        filter: ['!', ['in', ['get', 'kind'], ['literal', ['path', 'footway', 'steps', 'track', 'cycleway']]]],
+        source: TILES_SOURCE,
+        'source-layer': 'tasks',
         paint: {
-          'line-color': colours.roadCasing,
-          'line-width': roadWidth([7, 20], [6, 16], [4, 11]),
+          'line-color': colours.square,
+          'line-opacity': 0.55,
+          'line-width': ['interpolate', ['linear'], ['zoom'], 8, 0.5, 14, 1.2, 18, 2],
         },
       },
-
       {
-        id: 'road-fill',
-        type: 'line',
-        source: 'roads',
-        layout: { 'line-cap': 'round', 'line-join': 'round' },
-        filter: ['!', ['in', ['get', 'kind'], ['literal', ['path', 'footway', 'steps', 'track', 'cycleway']]]],
-        paint: {
-          'line-color': [
-            'case',
-            ['in', ['get', 'kind'], ['literal', MAJOR]], colours.primary,
-            ['in', ['get', 'kind'], ['literal', ['secondary', 'secondary_link']]], colours.secondary,
-            colours.roadFill,
-          ] as never,
-          'line-width': roadWidth([5, 17], [4, 13], [2.5, 8.5]),
-        },
-      },
-
-      {
-        id: 'path-line',
-        type: 'line',
-        source: 'roads',
-        filter: ['in', ['get', 'kind'], ['literal', ['path', 'footway', 'steps', 'track', 'cycleway']]],
-        paint: {
-          'line-color': colours.track,
-          'line-width': width(1, 2.5),
-          'line-dasharray': [2, 2],
-          'line-opacity': 0.7,
-        },
-      },
-
-      {
-        id: 'building-fill',
-        type: 'fill',
-        source: 'buildings',
-        paint: { 'fill-color': colours.buildingFill, 'fill-opacity': 0.95 },
-      },
-      {
-        id: 'building-outline',
-        type: 'line',
-        source: 'buildings',
-        minzoom: 15,
-        paint: { 'line-color': colours.buildingLine, 'line-width': width(0.4, 1) },
-      },
-
-      {
-        id: 'road-label',
+        id: 'task-label',
         type: 'symbol',
-        source: 'roads',
-        minzoom: 15,
-        filter: ['has', 'name'],
+        source: TILES_SOURCE,
+        'source-layer': 'tasks',
+        minzoom: 13,
         layout: {
-          'symbol-placement': 'line',
-          'text-field': ['get', 'name'],
+          'text-field': ['concat', ['to-string', ['get', 'edits']], ' edits'],
           'text-font': ['Noto Sans Regular'],
           'text-size': 11,
-          'text-max-angle': 30,
         },
-        paint: { 'text-color': colours.label, 'text-halo-color': colours.labelHalo, 'text-halo-width': 1.5 },
+        paint: { 'text-color': colours.squareText, 'text-halo-color': '#ffffff', 'text-halo-width': 1.5 },
+      },
+
+      {
+        id: 'our-waterways',
+        type: 'line',
+        source: TILES_SOURCE,
+        'source-layer': 'waterways',
+        paint: {
+          'line-color': colours.water,
+          'line-width': ['interpolate', ['linear'], ['zoom'], 10, 1, 16, 3.5],
+        },
+      },
+      {
+        id: 'our-roads',
+        type: 'line',
+        source: TILES_SOURCE,
+        'source-layer': 'roads',
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: {
+          'line-color': colours.road,
+          'line-width': ['interpolate', ['exponential', 1.6], ['zoom'], 10, 1, 14, 2.5, 18, 7],
+        },
+      },
+      {
+        id: 'our-buildings',
+        type: 'fill',
+        source: TILES_SOURCE,
+        'source-layer': 'buildings',
+        paint: { 'fill-color': colours.building, 'fill-opacity': 0.85 },
+      },
+      {
+        id: 'our-buildings-outline',
+        type: 'line',
+        source: TILES_SOURCE,
+        'source-layer': 'buildings',
+        minzoom: 15,
+        paint: { 'line-color': colours.buildingLine, 'line-width': 0.6 },
+      },
+      // At overview zooms individual buildings vanish into nothing, so give
+      // them a dot that survives being 20 cm wide on screen.
+      {
+        id: 'our-buildings-dot',
+        type: 'circle',
+        source: TILES_SOURCE,
+        'source-layer': 'buildings',
+        maxzoom: 13,
+        paint: {
+          'circle-color': colours.building,
+          'circle-opacity': 0.5,
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 6, 1, 12, 2.5],
+        },
       },
     ],
   }
 }
+
+/** Layer ids that respond to a click, most specific first. */
+export const CLICKABLE = ['our-buildings', 'task-fill']
