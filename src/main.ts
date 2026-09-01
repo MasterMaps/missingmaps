@@ -57,9 +57,12 @@ async function start() {
   backButton.addEventListener('click', () => (current ? frame(current) : select(null)))
 
   map.onReady(() => {
+    map.setProjectMarkers(projectMarkers())
     const fromUrl = Number(new URLSearchParams(location.search).get('project'))
     select(dataset.projects.some((p) => p.id === fromUrl) ? fromUrl : null)
   })
+
+  map.onProjectClick((id) => select(id))
 
   map.onSquareClick((square) => {
     map.zoomTo(square.bbox, { padding: 60, maxZoom: 18 })
@@ -87,6 +90,30 @@ const withEdits = (projects: Project[]) =>
     .filter((p) => !Object.keys(summary).length || (summary[p.id]?.features ?? 0) > 0)
     .sort((a, b) => (b.lastEdit ?? '').localeCompare(a.lastEdit ?? ''))
 
+/** A point per project, placed at the centre of what the group actually mapped. */
+function projectMarkers(): GeoJSON.FeatureCollection {
+  const features = withEdits(dataset.projects).flatMap((project) => {
+    const box = summary[project.id]?.bbox ?? project.editBbox
+    if (!box) return []
+    const count = summary[project.id]?.features ?? 0
+    return [
+      {
+        type: 'Feature' as const,
+        properties: {
+          project: project.id,
+          features: count,
+          label: `${count.toLocaleString()} · ${(project.countries ?? []).join(', ')}`.trim(),
+        },
+        geometry: {
+          type: 'Point' as const,
+          coordinates: [(box[0] + box[2]) / 2, (box[1] + box[3]) / 2],
+        },
+      },
+    ]
+  })
+  return { type: 'FeatureCollection', features }
+}
+
 /* ---------------------------------------------------------------- project */
 
 function select(id: number | null) {
@@ -100,6 +127,7 @@ function select(id: number | null) {
   history.replaceState(null, '', url)
 
   map.filterToProject(current?.id ?? null)
+  map.showMarkers(!current)
   renderInfo(current)
 
   if (current) frame(current)

@@ -133,5 +133,45 @@ export function highlightLayers(tilesUrl: string): {
   }
 }
 
+export const MARKERS_SOURCE = 'projects'
+
+/**
+ * One dot per project for the globe view. The tile archive starts at z4, and
+ * individual buildings are sub-pixel at world scale anyway — a dot sized by how
+ * much was mapped says far more than a smudge of geometry would.
+ */
+export const markerLayers = (): LayerSpecification[] => [
+  {
+    id: 'project-dot',
+    type: 'circle',
+    source: MARKERS_SOURCE,
+    maxzoom: 8,
+    paint: {
+      'circle-color': colours.building,
+      'circle-opacity': 0.8,
+      'circle-stroke-color': '#ffffff',
+      'circle-stroke-width': 1.2,
+      // Area, not radius, tracks the count — otherwise the big projects swamp
+      // everything else.
+      'circle-radius': ['interpolate', ['linear'], ['sqrt', ['get', 'features']], 0, 3.5, 25, 9, 71, 20],
+    },
+  },
+  {
+    id: 'project-dot-label',
+    type: 'symbol',
+    source: MARKERS_SOURCE,
+    minzoom: 3,
+    maxzoom: 8,
+    layout: {
+      'text-field': ['get', 'label'],
+      'text-font': ['Noto Sans Regular'],
+      'text-size': 11,
+      'text-offset': [0, 1.1],
+      'text-anchor': 'top',
+    },
+    paint: { 'text-color': colours.squareText, 'text-halo-color': '#ffffff', 'text-halo-width': 1.5 },
+  },
+]
+
 /** Layer ids that respond to a click, most specific first. */
-export const CLICKABLE = ['our-buildings', 'task-fill']
+export const CLICKABLE = ['project-dot', 'our-buildings', 'task-fill']

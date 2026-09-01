@@ -1,6 +1,20 @@
-import { addProtocol, AttributionControl, Map as MlMap, NavigationControl, Popup } from 'maplibre-gl'
+import {
+  addProtocol,
+  AttributionControl,
+  type GeoJSONSource,
+  Map as MlMap,
+  NavigationControl,
+  Popup,
+} from 'maplibre-gl'
 import { Protocol } from 'pmtiles'
-import { BASEMAP_STYLE, CLICKABLE, highlightLayers, TILES_SOURCE } from './map-style'
+import {
+  BASEMAP_STYLE,
+  CLICKABLE,
+  highlightLayers,
+  markerLayers,
+  MARKERS_SOURCE,
+  TILES_SOURCE,
+} from './map-style'
 import type { Bbox } from './types'
 
 /** PMTiles is a file format, not a tile server; this teaches MapLibre to read it. */
@@ -52,6 +66,9 @@ export class HighlightMap {
       const { source, layers } = highlightLayers(tilesUrl)
       this.map.addSource(TILES_SOURCE, source as never)
       for (const layer of layers) this.map.addLayer(layer)
+
+      this.map.addSource(MARKERS_SOURCE, { type: 'geojson', data: emptyCollection() })
+      for (const layer of markerLayers()) this.map.addLayer(layer)
       this.ready = true
       this.onReadyHandlers.forEach((handler) => handler())
       this.onReadyHandlers = []
@@ -82,6 +99,29 @@ export class HighlightMap {
         project: Number(feature.properties?.project),
       })
     })
+  }
+
+  /** One dot per project, for the zoomed-out view. */
+  setProjectMarkers(collection: GeoJSON.FeatureCollection) {
+    const source = this.map.getSource(MARKERS_SOURCE) as GeoJSONSource | undefined
+    source?.setData(collection)
+  }
+
+  /** Clicking a project dot on the globe. */
+  onProjectClick(handler: (id: number) => void) {
+    this.map.on('click', 'project-dot', (event) => {
+      const id = event.features?.[0]?.properties?.project
+      if (id != null) handler(Number(id))
+    })
+  }
+
+  /** The dots are an overview device; they only get in the way inside a project. */
+  showMarkers(visible: boolean) {
+    for (const layer of ['project-dot', 'project-dot-label']) {
+      if (this.map.getLayer(layer)) {
+        this.map.setLayoutProperty(layer, 'visibility', visible ? 'visible' : 'none')
+      }
+    }
   }
 
   /** Pulls back to the whole globe rather than fitting a world-sized bbox. */
@@ -138,3 +178,5 @@ function geometryBbox(geometry: GeoJSON.Geometry): Bbox {
   walk((geometry as { coordinates: unknown }).coordinates)
   return [Math.min(...lons), Math.min(...lats), Math.max(...lons), Math.max(...lats)]
 }
+
+const emptyCollection = (): GeoJSON.FeatureCollection => ({ type: 'FeatureCollection', features: [] })
