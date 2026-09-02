@@ -7,8 +7,8 @@ Tasking Manager task squares they worked in. Click a square to zoom into it.
 
 Nothing is hidden when you select a project: neighbouring work stays on the map as context.
 
-As of the first full build: **38,772 features and 2,082 task squares across 48 projects**, from a
-5.6 MB tile archive.
+Currently **38,337 features and 2,082 task squares across 35 projects in 19 countries**, from a
+5.6 MB tile archive. Largest: DR Congo 4,956, Cameroon 3,042, Canada 2,325, Ghana 2,304.
 
 Live at **https://mastermaps.github.io/missingmaps/**
 
@@ -71,10 +71,12 @@ sidestep the problem entirely: the extraction happens once, in CI, on a clean ad
 
 It also writes [`public/data/tiles.json`](public/data/tiles.json) — feature count, square count and
 bounding box per project. The app uses it to frame a project by the true extent of its work, to size
-the globe dots, and to leave out the handful of projects that are a single stray changeset and would
-open on an empty map.
+the globe dots, and to drop projects with fewer than ten features (`MIN_FEATURES` in
+[`src/main.ts`](src/main.ts)). Sixteen of 51 projects fall below that line, nine of them with
+nothing at all: a stray changeset or two, worth 23 features between them, that only offered a
+near-empty map and padded the project count.
 
-[`scripts/build-tiles.mjs`](scripts/build-tiles.mjs) builds the archive. Four details are worth
+[`scripts/build-tiles.mjs`](scripts/build-tiles.mjs) builds the archive. Five details are worth
 knowing:
 
 - **Query areas follow the changesets, not the project boundary.** Tasking Manager areas of
@@ -90,10 +92,19 @@ knowing:
 - **A partial answer is refused.** An oversized Overpass query returns HTTP 200 with a truncated
   element list and a `remark` saying it gave up. A remark now means the box was too big: quarter it
   and ask again.
+- **Everything is clipped to the project's area of interest.** Changeset ids are not trustworthy
+  evidence of where a project's work is: one changeset tagged for the Accra project had also touched
+  something in Bangladesh, and that single feature of 1599 stretched the project extent across two
+  continents — putting its globe dot in Yemen and zooming the map so far out that Accra vanished.
+  Worse cases exist. A Bangladesh project's features are in Peru, 18,000 km away; a Ukrainian
+  project's are in Nigeria. Those are mappers who kept a stale `#hotosm-project` hashtag while
+  mapping elsewhere: the hashtag is wrong and the area of interest is right. Clipping drops 435
+  features of 38,772. The margin is 3 km, because one project's work genuinely sits 2 km past a
+  small task boundary and nothing mis-attributed lands within 1000 km.
 - **Attribution is by the changeset that last touched a way.** Exact for anything nobody has
   edited since, an undercount otherwise: a building we drew and a validator later squared off
   now belongs to their changeset. It undercounts; it never claims someone else's work. Against
-  ohsome's independent count of 42,574 buildings for the hashtag, the archive holds 91%; the gap is
+  ohsome's independent count of 42,574 buildings for the hashtag, the archive holds 90%; the gap is
   this effect plus the 1,415 buildings ohsome says were later deleted.
 
 Extraction runs against [`overpass.openstreetmap.fr`](https://overpass.openstreetmap.fr), falling
@@ -103,7 +114,10 @@ the same query the French instance answers in ~3 s where the main one took 22 s 
 queueing was counted, and its database is current to the minute.
 
 **Node edits are not captured.** The extractor asks for ways only, so projects whose work was place
-names or POIs show nothing — that is why a few of the older projects come out empty.
+names or POIs show nothing — which is part of why some older projects fall below the threshold.
+
+The clip is applied while assembling the archive rather than during extraction, so it cleans up
+already-cached extracts without re-querying anything. That rebuild took 8 seconds.
 
 ### Updating after a mapathon
 
