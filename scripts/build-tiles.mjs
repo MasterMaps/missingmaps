@@ -214,8 +214,12 @@ function queryAreas(project) {
   const points = project.editPoints ?? []
   if (!points.length) return splitBbox(project.bbox ?? project.editBbox)
 
+  // Same reason as the stray filter: a changeset that wandered leaves an edit
+  // point far outside the project, and querying around it is wasted work.
+  const aoi = project.bbox ? grow(project.bbox, AOI_MARGIN_DEG) : null
   const cells = new Map()
   for (const [lon, lat] of points) {
+    if (aoi && !covers(aoi, [lon, lat])) continue
     const x = Math.floor(lon / CELL_DEG)
     const y = Math.floor(lat / CELL_DEG)
     const key = `${x}/${y}`
@@ -227,7 +231,9 @@ function queryAreas(project) {
       (y + 1) * CELL_DEG + MARGIN_DEG,
     ])
   }
-  return [...cells.values()]
+  // If the area of interest disagrees with every recorded edit location, trust
+  // the edits: an empty query list would silently drop the whole project.
+  return cells.size ? [...cells.values()] : queryAreas({ ...project, bbox: null })
 }
 
 /** Splits a bbox into pieces no larger than MAX_SPAN_DEG on a side. */
@@ -275,6 +281,28 @@ function toFeature(el, project) {
   return null
 }
 
+/**
+ * A Tasking Manager project is its area of interest, so anything outside it is
+ * not that project's work — however the changeset ids say otherwise.
+ *
+ * One changeset in the Accra project also touched features in Bangladesh, which
+ * put 1 of 9972 coordinates 10000 km from the rest, stretched the project extent
+ * across two continents and left its globe dot sitting in Yemen. Others are
+ * worse: a Bangladesh project whose features are in Peru, a Ukrainian one whose
+ * features are in Nigeria — mappers who kept a stale #hotosm-project hashtag
+ * while mapping somewhere else. The hashtag is wrong; the area of interest is
+ * right.
+ *
+ * The margin is 3 km because work legitimately spills past a task boundary —
+ * one project's features sit 2 km outside a small area of interest. Nothing
+ * mis-attributed lands within 1000 km, so the tolerance costs nothing.
+ */
+const AOI_MARGIN_DEG = 0.03
+
+const grow = ([w, s, e, n], by) => [w - by, s - by, e + by, n + by]
+
+const covers = ([w, s, e, n], [lon, lat]) => lon >= w && lon <= e && lat >= s && lat <= n
+
 const centroid = (coords) => {
   let x = 0
   let y = 0
@@ -284,6 +312,9 @@ const centroid = (coords) => {
   }
   return [x / coords.length, y / coords.length]
 }
+
+const centroidOf = (geometry) =>
+  centroid(geometry.type === 'Polygon' ? geometry.coordinates[0] : geometry.coordinates)
 
 const bboxOf = (geometry) => {
   const lons = []
@@ -402,6 +433,10 @@ for (const [index, project] of projects.entries()) {
   }
 
   let kept = 0
+  let strays = 0
+  // Applied here rather than during extraction so that already-cached extracts
+  // are cleaned up too, without re-querying anything.
+  const aoi = project.bbox ? grow(project.bbox, AOI_MARGIN_DEG) : null
   // Extent of the group's own work, so the app can frame the whole of it
   // rather than guessing from changeset centres.
   let bounds = null
@@ -416,6 +451,10 @@ for (const [index, project] of projects.entries()) {
 
   for (const layer of layers) {
     for (const feature of extracted.features[layer] ?? []) {
+      if (layer !== 'tasks' && aoi && !covers(aoi, centroidOf(feature.geometry))) {
+        strays++
+        continue
+      }
       streams[layer].push(JSON.stringify(feature))
       if (layer !== 'tasks') {
         kept++
@@ -429,6 +468,7 @@ for (const [index, project] of projects.entries()) {
 
   perProject[project.id] = { features: kept, squares, bbox: bounds }
   if (!cached) console.log(`  ${kept} features by us, ${squares} task squares`)
+  if (strays) console.log(`  dropped ${strays} feature(s) outside the project area`)
 }
 
 const totals = Object.values(perProject).reduce(
