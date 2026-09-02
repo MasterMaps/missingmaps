@@ -5,6 +5,13 @@ import './style.css'
 import { HighlightMap } from './map'
 import type { Bbox, Dataset, Project, TileSummary } from './types'
 
+/**
+ * Below this a project is not a mapathon — a stray changeset or two that left
+ * almost nothing behind. Listing them offers a near-empty map and pads the
+ * count. Sixteen of 51 projects fall here, between them 23 of 38,337 features.
+ */
+const MIN_FEATURES = 10
+
 const el = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
 
 const projectSelect = el<HTMLSelectElement>('project')
@@ -33,8 +40,10 @@ async function start() {
   if (tiles.ok) summary = ((await tiles.json()) as TileSummary).projects ?? {}
 
   el('hashtag').textContent = `#${dataset.hashtag}`
+  // Count what is actually listed, not every project the ingest has ever seen —
+  // otherwise the footer contradicts the dropdown.
   el('dataset-note').textContent =
-    `${dataset.projects.length} projects · ${dataset.mappers.length} mappers · ` +
+    `${withEdits(dataset.projects).length} projects · ${dataset.mappers.length} mappers · ` +
     `updated ${new Date(dataset.generated).toLocaleDateString('en-GB', { dateStyle: 'medium' })}`
 
   const everywhere = document.createElement('option')
@@ -77,17 +86,16 @@ async function start() {
 }
 
 /**
- * Projects with something on the map, most recently mapped first — the last
- * mapathon is the one people want to look at.
+ * Projects worth looking at, most recently mapped first — the last mapathon is
+ * the one people want to see.
  *
- * A handful of projects are a single stray changeset that left nothing behind,
- * or whose work was place names rather than buildings; listing them only offers
- * an empty map. Before the first tile build nothing is known, so list them all.
+ * Before the first tile build nothing is known about what landed, so list
+ * everything rather than nothing.
  */
 const withEdits = (projects: Project[]) =>
   projects
     .filter((p) => p.changesets.length)
-    .filter((p) => !Object.keys(summary).length || (summary[p.id]?.features ?? 0) > 0)
+    .filter((p) => !Object.keys(summary).length || (summary[p.id]?.features ?? 0) >= MIN_FEATURES)
     .sort((a, b) => (b.lastEdit ?? '').localeCompare(a.lastEdit ?? ''))
 
 /** A point per project, placed at the centre of what the group actually mapped. */
