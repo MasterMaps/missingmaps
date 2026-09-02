@@ -142,7 +142,7 @@ function select(id: number | null) {
   if (current) frame(current)
   else {
     map.showWorld()
-    setStatus('Pick a project, or click any square to zoom in', 'hint')
+    setStatus('Pick a project, or click a circle or square on the map to zoom in', 'hint')
   }
 }
 
