@@ -1,7 +1,7 @@
 {
   "hashtag": "iugnorge",
-  "generated": "2026-09-03T01:01:34.444Z",
-  "lastSequence": 7168497,
+  "generated": "2026-09-03T06:41:35.348Z",
+  "lastSequence": 7168826,
   "mappers": [
     "Heidi Bergfald",
     "mnsbdy",
@@ -459,7 +459,8 @@
         188378663,
         188378962,
         188379418,
-        188379318
+        188379318,
+        188453040
       ],
       "mappers": [
         "Heidi Bergfald",
@@ -477,7 +478,7 @@
         "HVaadal"
       ],
       "firstEdit": "2026-09-01T15:27:41Z",
-      "lastEdit": "2026-09-01T17:25:29Z",
+      "lastEdit": "2026-09-03T06:12:00Z",
       "editPoints": [
         [
           120.4123,
@@ -790,6 +791,10 @@
         [
           120.3273,
           -8.4747
+        ],
+        [
+          120.3786,
+          -8.6683
         ]
       ],
       "editBbox": [
@@ -822,10 +827,10 @@
       "mappingTypes": [
         "BUILDINGS"
       ],
-      "percentMapped": 25,
+      "percentMapped": 54,
       "percentValidated": 0,
       "changesetComment": "#hotosm-project-63366 #FloresEQ mapped buildings within earthquake-affected areas",
-      "metadataAt": "2026-09-01T17:25:29Z",
+      "metadataAt": "2026-09-03T06:12:00Z",
       "tmCentroid": [
         120.377522,
         -8.627815
