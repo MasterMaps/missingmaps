@@ -1,7 +1,7 @@
 {
   "hashtag": "iugnorge",
-  "generated": "2026-09-05T18:26:42.812Z",
-  "lastSequence": 7172243,
+  "generated": "2026-09-06T01:05:32.437Z",
+  "lastSequence": 7172631,
   "mappers": [
     "Heidi Bergfald",
     "mnsbdy",
@@ -378,6 +378,57 @@
   ],
   "projects": [
     {
+      "id": 63531,
+      "source": "changesets",
+      "changesets": [
+        188589155
+      ],
+      "mappers": [
+        "HVaadal"
+      ],
+      "firstEdit": "2026-09-05T20:17:50Z",
+      "lastEdit": "2026-09-05T20:17:50Z",
+      "editPoints": [
+        [
+          34.9681,
+          -15.0066
+        ]
+      ],
+      "editBbox": [
+        34.9667473,
+        -15.007018,
+        34.9695119,
+        -15.0061976
+      ],
+      "name": "Mapping Balaka Town, Malawi Missing Buildings and Road for Resilience and Smart City Development",
+      "shortDescription": "Adding missing buildings to OSM is crucial for improving both the accuracy and usefulness of the map. By including these buildings, users can better navigate their surroundings, easily locate homes, businesses, and services. Additionally, accurate building data supports emergency response and humanitarian efforts, enabling teams to plan, coordinate, and execute rescue operations more efficiently i",
+      "bbox": [
+        34.927211,
+        -15.014018,
+        35.007334,
+        -14.960706
+      ],
+      "centre": [
+        34.9672725,
+        -14.987362000000001
+      ],
+      "created": "2026-09-03T11:03:12.294000Z",
+      "status": "PUBLISHED",
+      "countries": [
+        "Malawi"
+      ],
+      "organisation": "TomTom",
+      "campaigns": [],
+      "mappingTypes": [
+        "BUILDINGS",
+        "ROADS"
+      ],
+      "percentMapped": 69,
+      "percentValidated": 4,
+      "changesetComment": "#hotosm-project-63531 #tt_event #mzuniyouthmappers #tomtom #MzuziMapathon #YouthMappers Added and Modified buildings &Road",
+      "metadataAt": "2026-09-05T20:17:50Z"
+    },
+    {
       "id": 63366,
       "source": "changesets",
       "changesets": [
@@ -460,7 +511,8 @@
         188378962,
         188379418,
         188379318,
-        188453040
+        188453040,
+        188589155
       ],
       "mappers": [
         "Heidi Bergfald",
@@ -478,7 +530,7 @@
         "HVaadal"
       ],
       "firstEdit": "2026-09-01T15:27:41Z",
-      "lastEdit": "2026-09-03T06:12:00Z",
+      "lastEdit": "2026-09-05T20:17:50Z",
       "editPoints": [
         [
           120.4123,
@@ -795,11 +847,15 @@
         [
           120.3786,
           -8.6683
+        ],
+        [
+          34.9681,
+          -15.0066
         ]
       ],
       "editBbox": [
-        120.3186955,
-        -8.827379,
+        34.9667473,
+        -15.007018,
         120.4554935,
         -8.380294
       ],
@@ -827,10 +883,10 @@
       "mappingTypes": [
         "BUILDINGS"
       ],
-      "percentMapped": 54,
-      "percentValidated": 0,
+      "percentMapped": 86,
+      "percentValidated": 1,
       "changesetComment": "#hotosm-project-63366 #FloresEQ mapped buildings within earthquake-affected areas",
-      "metadataAt": "2026-09-03T06:12:00Z",
+      "metadataAt": "2026-09-05T20:17:50Z",
       "tmCentroid": [
         120.377522,
         -8.627815
