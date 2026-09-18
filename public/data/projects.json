@@ -1,7 +1,7 @@
 {
   "hashtag": "iugnorge",
-  "generated": "2026-09-18T06:41:08.898Z",
-  "lastSequence": 7189498,
+  "generated": "2026-09-18T12:35:56.530Z",
+  "lastSequence": 7189826,
   "mappers": [
     "Heidi Bergfald",
     "mnsbdy",
@@ -377,6 +377,60 @@
     "helenitahelenita"
   ],
   "projects": [
+    {
+      "id": 62541,
+      "source": "changesets",
+      "changesets": [
+        189194049
+      ],
+      "mappers": [
+        "HVaadal"
+      ],
+      "firstEdit": "2026-09-18T07:26:01Z",
+      "lastEdit": "2026-09-18T07:26:01Z",
+      "editPoints": [
+        [
+          32.4513,
+          15.561
+        ]
+      ],
+      "editBbox": [
+        32.4510851,
+        15.560284,
+        32.4515927,
+        15.5617798
+      ],
+      "name": "Mapping for Sudan   :  Khartoum 1",
+      "shortDescription": "Since April 2023, Sudan has been engulfed in civil war, leading to one of the world’s most severe humanitarian crises. With the highest displacement globally, millions of people face inadequate access to food, health services, and protection. The mounting crisis, compounded by insufficient funding, makes it critical for humanitarian responders to have access to reliable geospatial data.",
+      "bbox": [
+        32.403488,
+        15.542428,
+        32.469063,
+        15.616837
+      ],
+      "centre": [
+        32.4362755,
+        15.579632499999999
+      ],
+      "created": "2026-08-19T15:34:04.892000Z",
+      "status": "PUBLISHED",
+      "countries": [
+        "Sudan"
+      ],
+      "organisation": "Humanitarian OpenStreetMap Team - Eastern and Southern Africa Open Mapping Hub (HOT ESA Hub)",
+      "campaigns": [
+        "H2H Mapping for Sudan 2024",
+        "Sudan Crisis 2023"
+      ],
+      "mappingTypes": [
+        "BUILDINGS",
+        "ROADS"
+      ],
+      "percentMapped": 40,
+      "percentValidated": 26,
+      "changesetComment": "#hotosm-project-62541 #omhesa, #2023sudanconflict #BLRFHASudan",
+      "metadataAt": "2026-09-18T07:26:01Z"
+    },
     {
       "id": 63531,
       "source": "changesets",
