@@ -1,7 +1,7 @@
 {
   "hashtag": "iugnorge",
-  "generated": "2026-09-29T12:42:00.954Z",
-  "lastSequence": 7205013,
+  "generated": "2026-09-29T18:34:49.115Z",
+  "lastSequence": 7205351,
   "mappers": [
     "Heidi Bergfald",
     "mnsbdy",
@@ -374,9 +374,172 @@
     "Madgimmy",
     "Hanna Mollan",
     "Rebekka Aanderaa",
-    "helenitahelenita"
+    "helenitahelenita",
+    "hiloman",
+    "B Prane",
+    "Benny Kv"
   ],
   "projects": [
+    {
+      "id": 57855,
+      "source": "changesets",
+      "changesets": [
+        189735433,
+        189735929,
+        189736031,
+        189736063,
+        189735258,
+        189736829,
+        189736780,
+        189735652,
+        189737041,
+        189737204,
+        189735723,
+        189737556,
+        189737651,
+        189737664,
+        189738118,
+        189738275,
+        189737463,
+        189737843,
+        189737869,
+        189739021,
+        189738856,
+        189738815,
+        189736429
+      ],
+      "mappers": [
+        "hiloman",
+        "B Prane",
+        "Benny Kv"
+      ],
+      "firstEdit": "2026-09-29T15:45:54Z",
+      "lastEdit": "2026-09-29T17:04:12Z",
+      "editPoints": [
+        [
+          8.2755,
+          12.0435
+        ],
+        [
+          8.3201,
+          12.0994
+        ],
+        [
+          8.3203,
+          12.0987
+        ],
+        [
+          8.2418,
+          12.1472
+        ],
+        [
+          8.2754,
+          12.0459
+        ],
+        [
+          8.3164,
+          12.101
+        ],
+        [
+          8.2488,
+          12.1424
+        ],
+        [
+          8.283,
+          12.044
+        ],
+        [
+          8.3158,
+          12.1013
+        ],
+        [
+          8.1377,
+          12.238
+        ],
+        [
+          8.1674,
+          12.2691
+        ],
+        [
+          8.1378,
+          12.2374
+        ],
+        [
+          8.3154,
+          12.0994
+        ],
+        [
+          8.138,
+          12.2373
+        ],
+        [
+          8.2603,
+          12.0208
+        ],
+        [
+          8.3175,
+          12.1003
+        ],
+        [
+          8.1375,
+          12.2375
+        ],
+        [
+          8.3157,
+          12.0986
+        ],
+        [
+          8.1672,
+          12.2689
+        ],
+        [
+          8.2601,
+          12.0217
+        ],
+        [
+          8.1675,
+          12.269
+        ],
+        [
+          8.1672,
+          12.269
+        ]
+      ],
+      "editBbox": [
+        8.1367767,
+        12.0203127,
+        8.3204843,
+        12.2699305
+      ],
+      "name": "Missing Maps: Buildings in Kano, Nigeria (1)",
+      "shortDescription": "MSF has been running activities in the large city of Kano for a few years. Amongst these activities have been nutrition, Outpatient Department, maternal health and many others. We have also provided support in the form of emergency intervention (e.g., Diphtheria, Lassa, etc). Help us improve the geographical data for better support to operational activities. Read here for more information about MS",
+      "bbox": [
+        8.081818,
+        11.953349,
+        8.375702,
+        12.271573
+      ],
+      "centre": [
+        8.228760000000001,
+        12.112461
+      ],
+      "created": "2026-07-15T12:12:49.292000Z",
+      "status": "PUBLISHED",
+      "countries": [
+        "Nigeria"
+      ],
+      "organisation": "Médecins Sans Frontières (MSF) ",
+      "campaigns": [
+        "Kano - Nigeria"
+      ],
+      "mappingTypes": [
+        "BUILDINGS"
+      ],
+      "percentMapped": 22,
+      "percentValidated": 21,
+      "changesetComment": "#hotosm-project-57855 Mapping of buildings in #Kano Nigeria for #missingmaps #msf",
+      "metadataAt": "2026-09-29T17:04:12Z"
+    },
     {
       "id": 62541,
       "source": "changesets",
