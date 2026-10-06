@@ -1,7 +1,7 @@
 {
   "hashtag": "iugnorge",
-  "generated": "2026-10-06T12:40:17.811Z",
-  "lastSequence": 7214351,
+  "generated": "2026-10-06T18:34:22.530Z",
+  "lastSequence": 7214676,
   "mappers": [
     "Heidi Bergfald",
     "mnsbdy",
@@ -377,9 +377,578 @@
     "helenitahelenita",
     "hiloman",
     "B Prane",
-    "Benny Kv"
+    "Benny Kv",
+    "Martin BV",
+    "Scramasax5555",
+    "Ingridwelde",
+    "HeidielskerMia",
+    "Julie Knapp",
+    "clarkography"
   ],
   "projects": [
+    {
+      "id": 62541,
+      "source": "changesets",
+      "changesets": [
+        189194049,
+        190094146,
+        190094882,
+        190094680,
+        190096083,
+        190098744,
+        190098871,
+        190099766,
+        190099879,
+        190099820,
+        190098829,
+        190099030,
+        190099038,
+        190099201,
+        190099313,
+        190099446,
+        190099505,
+        190099739,
+        190099747,
+        190100144,
+        190100151,
+        190100041,
+        190100076,
+        190100415,
+        190100243,
+        190100267,
+        190100277,
+        190100291,
+        190100317,
+        190100382,
+        190100882,
+        190101170,
+        190101178,
+        190101189,
+        190101203,
+        190101244,
+        190101497,
+        190101501,
+        190101518,
+        190101665,
+        190101762,
+        190102019,
+        190101844,
+        190102119,
+        190102263,
+        190102268,
+        190102333,
+        190102427,
+        190102435,
+        190102447,
+        190102469,
+        190102480,
+        190102696,
+        190102490,
+        190102520,
+        190102721,
+        190102741,
+        190102868,
+        190102902,
+        190102905,
+        190102916,
+        190103139,
+        190103485,
+        190103439,
+        190103509,
+        190103717,
+        190103639,
+        190103940,
+        190103993,
+        190104163,
+        190104191,
+        190101770,
+        190101687,
+        190101716,
+        190101947,
+        190101948,
+        190101972,
+        190101998,
+        190098622,
+        190098626,
+        190098651
+      ],
+      "mappers": [
+        "HVaadal",
+        "Arve Borseth",
+        "mnsbdy",
+        "Heidi Bergfald",
+        "Martin BV",
+        "Scramasax5555",
+        "Ingridwelde",
+        "HeidielskerMia",
+        "Julie Knapp",
+        "Harald :)",
+        "Mianordy",
+        "Nya99",
+        "Anders Stokka",
+        "clarkography",
+        "Marianne_N"
+      ],
+      "firstEdit": "2026-09-18T07:26:01Z",
+      "lastEdit": "2026-10-06T17:21:58Z",
+      "editPoints": [
+        [
+          32.4513,
+          15.561
+        ],
+        [
+          32.4544,
+          15.5817
+        ],
+        [
+          32.4547,
+          15.5817
+        ],
+        [
+          32.4547,
+          15.5816
+        ],
+        [
+          32.4459,
+          15.5588
+        ],
+        [
+          32.4428,
+          15.5587
+        ],
+        [
+          32.458,
+          15.583
+        ],
+        [
+          32.4587,
+          15.5832
+        ],
+        [
+          32.4413,
+          15.6089
+        ],
+        [
+          32.4517,
+          15.5878
+        ],
+        [
+          32.4049,
+          15.6055
+        ],
+        [
+          32.4048,
+          15.605
+        ],
+        [
+          32.4581,
+          15.5831
+        ],
+        [
+          32.4581,
+          15.5831
+        ],
+        [
+          32.4117,
+          15.5998
+        ],
+        [
+          32.4282,
+          15.5464
+        ],
+        [
+          32.4635,
+          15.5774
+        ],
+        [
+          32.4419,
+          15.5458
+        ],
+        [
+          32.452,
+          15.5879
+        ],
+        [
+          32.4654,
+          15.5835
+        ],
+        [
+          32.459,
+          15.5832
+        ],
+        [
+          32.4418,
+          15.5538
+        ],
+        [
+          32.442,
+          15.5459
+        ],
+        [
+          32.4463,
+          15.5576
+        ],
+        [
+          32.452,
+          15.6117
+        ],
+        [
+          32.4277,
+          15.6096
+        ],
+        [
+          32.4415,
+          15.5455
+        ],
+        [
+          32.459,
+          15.583
+        ],
+        [
+          32.4522,
+          15.5839
+        ],
+        [
+          32.4519,
+          15.5878
+        ],
+        [
+          32.4589,
+          15.5829
+        ],
+        [
+          32.4419,
+          15.5535
+        ],
+        [
+          32.4521,
+          15.5876
+        ],
+        [
+          32.4404,
+          15.5553
+        ],
+        [
+          32.4582,
+          15.5831
+        ],
+        [
+          32.451,
+          15.5858
+        ],
+        [
+          32.4418,
+          15.5549
+        ],
+        [
+          32.4588,
+          15.5827
+        ],
+        [
+          32.4658,
+          15.5837
+        ],
+        [
+          32.4415,
+          15.5532
+        ],
+        [
+          32.4446,
+          15.5574
+        ],
+        [
+          32.4158,
+          15.596
+        ],
+        [
+          32.4585,
+          15.5823
+        ],
+        [
+          32.4587,
+          15.5826
+        ],
+        [
+          32.4525,
+          15.587
+        ],
+        [
+          32.4584,
+          15.5822
+        ],
+        [
+          32.4529,
+          15.5852
+        ],
+        [
+          32.4421,
+          15.6026
+        ],
+        [
+          32.4597,
+          15.5873
+        ],
+        [
+          32.4182,
+          15.5954
+        ],
+        [
+          32.4418,
+          15.5576
+        ],
+        [
+          32.4581,
+          15.5822
+        ],
+        [
+          32.4158,
+          15.5958
+        ],
+        [
+          32.4538,
+          15.5854
+        ],
+        [
+          32.4285,
+          15.6091
+        ],
+        [
+          32.4579,
+          15.5824
+        ],
+        [
+          32.4487,
+          15.6092
+        ],
+        [
+          32.4283,
+          15.609
+        ],
+        [
+          32.4378,
+          15.5958
+        ],
+        [
+          32.4431,
+          15.547
+        ],
+        [
+          32.4447,
+          15.5575
+        ],
+        [
+          32.4117,
+          15.613
+        ],
+        [
+          32.4533,
+          15.587
+        ],
+        [
+          32.4379,
+          15.5962
+        ],
+        [
+          32.4485,
+          15.6091
+        ],
+        [
+          32.4421,
+          15.547
+        ],
+        [
+          32.4214,
+          15.6104
+        ],
+        [
+          32.4227,
+          15.6108
+        ],
+        [
+          32.4224,
+          15.6105
+        ],
+        [
+          32.4537,
+          15.5877
+        ],
+        [
+          32.4237,
+          15.6115
+        ],
+        [
+          32.4421,
+          15.5535
+        ],
+        [
+          32.4588,
+          15.5824
+        ],
+        [
+          32.4475,
+          15.6104
+        ],
+        [
+          32.4395,
+          15.548
+        ],
+        [
+          32.4447,
+          15.5575
+        ],
+        [
+          32.4585,
+          15.5823
+        ],
+        [
+          32.4656,
+          15.5838
+        ],
+        [
+          32.4429,
+          15.5587
+        ],
+        [
+          32.4046,
+          15.6052
+        ],
+        [
+          32.4469,
+          15.5592
+        ]
+      ],
+      "editBbox": [
+        32.4041825,
+        15.5405031,
+        32.4660187,
+        15.6148445
+      ],
+      "name": "Mapping for Sudan   :  Khartoum 1",
+      "shortDescription": "Since April 2023, Sudan has been engulfed in civil war, leading to one of the world’s most severe humanitarian crises. With the highest displacement globally, millions of people face inadequate access to food, health services, and protection. The mounting crisis, compounded by insufficient funding, makes it critical for humanitarian responders to have access to reliable geospatial data.",
+      "bbox": [
+        32.403488,
+        15.542428,
+        32.469063,
+        15.616837
+      ],
+      "centre": [
+        32.4362755,
+        15.579632499999999
+      ],
+      "created": "2026-08-19T15:34:04.892000Z",
+      "status": "PUBLISHED",
+      "countries": [
+        "Sudan"
+      ],
+      "organisation": "Humanitarian OpenStreetMap Team - Eastern and Southern Africa Open Mapping Hub (HOT ESA Hub)",
+      "campaigns": [
+        "H2H Mapping for Sudan 2024",
+        "Sudan Crisis 2023"
+      ],
+      "mappingTypes": [
+        "BUILDINGS",
+        "ROADS"
+      ],
+      "percentMapped": 49,
+      "percentValidated": 35,
+      "changesetComment": "#hotosm-project-62541 #omhesa, #2023sudanconflict #BLRFHASudan",
+      "metadataAt": "2026-10-06T17:21:58Z"
+    },
+    {
+      "id": 67062,
+      "source": "changesets",
+      "changesets": [
+        190098829,
+        190099030,
+        190099313,
+        190099446,
+        190099739,
+        190100076,
+        190100277,
+        190101189,
+        190101497,
+        190098626
+      ],
+      "mappers": [
+        "Ingridwelde"
+      ],
+      "firstEdit": "2026-10-06T15:42:06Z",
+      "lastEdit": "2026-10-06T16:31:38Z",
+      "editPoints": [
+        [
+          32.4049,
+          15.6055
+        ],
+        [
+          32.4048,
+          15.605
+        ],
+        [
+          32.4117,
+          15.5998
+        ],
+        [
+          32.4282,
+          15.5464
+        ],
+        [
+          32.4419,
+          15.5458
+        ],
+        [
+          32.442,
+          15.5459
+        ],
+        [
+          32.4415,
+          15.5455
+        ],
+        [
+          32.4404,
+          15.5553
+        ],
+        [
+          32.4418,
+          15.5549
+        ],
+        [
+          32.4046,
+          15.6052
+        ]
+      ],
+      "editBbox": [
+        32.4041825,
+        15.5452807,
+        32.4425679,
+        15.6058081
+      ],
+      "name": "Mapping Building Footprints for Thayetchaung Township, Tanintharyi Region",
+      "shortDescription": "Heavy rainfall since 26 September 2026 has caused flooding and landslides across Dawei, Launglon, and Thayetchaung Townships in Dawei District, affecting communities, buildings, and road access. This task aims to improve building footprints and road networks to support humanitarian response, accessibility assessment, disaster preparedness, and future flood-risk activities.",
+      "bbox": [
+        98.204821,
+        13.272619,
+        98.662924,
+        14.042437
+      ],
+      "centre": [
+        98.4338725,
+        13.657528
+      ],
+      "created": "2026-10-01T03:28:05.482000Z",
+      "status": "PUBLISHED",
+      "countries": [
+        "Myanmar"
+      ],
+      "organisation": "myOSM",
+      "campaigns": [],
+      "mappingTypes": [
+        "BUILDINGS"
+      ],
+      "percentMapped": 80,
+      "percentValidated": 19,
+      "changesetComment": "#hotosm-project-67062 #myOSM #flood mapping #help-mm-mapped buildings",
+      "metadataAt": "2026-10-06T16:31:38Z"
+    },
     {
       "id": 57855,
       "source": "changesets",
@@ -539,60 +1108,6 @@
       "percentValidated": 21,
       "changesetComment": "#hotosm-project-57855 Mapping of buildings in #Kano Nigeria for #missingmaps #msf",
       "metadataAt": "2026-09-29T17:04:12Z"
-    },
-    {
-      "id": 62541,
-      "source": "changesets",
-      "changesets": [
-        189194049
-      ],
-      "mappers": [
-        "HVaadal"
-      ],
-      "firstEdit": "2026-09-18T07:26:01Z",
-      "lastEdit": "2026-09-18T07:26:01Z",
-      "editPoints": [
-        [
-          32.4513,
-          15.561
-        ]
-      ],
-      "editBbox": [
-        32.4510851,
-        15.560284,
-        32.4515927,
-        15.5617798
-      ],
-      "name": "Mapping for Sudan   :  Khartoum 1",
-      "shortDescription": "Since April 2023, Sudan has been engulfed in civil war, leading to one of the world’s most severe humanitarian crises. With the highest displacement globally, millions of people face inadequate access to food, health services, and protection. The mounting crisis, compounded by insufficient funding, makes it critical for humanitarian responders to have access to reliable geospatial data.",
-      "bbox": [
-        32.403488,
-        15.542428,
-        32.469063,
-        15.616837
-      ],
-      "centre": [
-        32.4362755,
-        15.579632499999999
-      ],
-      "created": "2026-08-19T15:34:04.892000Z",
-      "status": "PUBLISHED",
-      "countries": [
-        "Sudan"
-      ],
-      "organisation": "Humanitarian OpenStreetMap Team - Eastern and Southern Africa Open Mapping Hub (HOT ESA Hub)",
-      "campaigns": [
-        "H2H Mapping for Sudan 2024",
-        "Sudan Crisis 2023"
-      ],
-      "mappingTypes": [
-        "BUILDINGS",
-        "ROADS"
-      ],
-      "percentMapped": 40,
-      "percentValidated": 26,
-      "changesetComment": "#hotosm-project-62541 #omhesa, #2023sudanconflict #BLRFHASudan",
-      "metadataAt": "2026-09-18T07:26:01Z"
     },
     {
       "id": 63531,
