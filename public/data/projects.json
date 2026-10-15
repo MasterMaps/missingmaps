@@ -1,7 +1,7 @@
 {
   "hashtag": "iugnorge",
-  "generated": "2026-10-15T00:55:36.514Z",
-  "lastSequence": 7225979,
+  "generated": "2026-10-15T06:42:43.237Z",
+  "lastSequence": 7226315,
   "mappers": [
     "Heidi Bergfald",
     "mnsbdy",
@@ -19369,7 +19369,40 @@
         47.7197001,
         107.162618,
         47.8794884
-      ]
+      ],
+      "name": "GeoVolunteerUB2020",
+      "shortDescription": "Public Lab Mongolia (PLM), a local non-governmental organization in Mongolia, is leading the Mongolian chapter for volunteer mappers through the HOT microgrant COVID-19 project, as part of their mission to promote open data and disaster preparedness.",
+      "bbox": [
+        106.415097,
+        47.680011,
+        107.559002,
+        48.207913
+      ],
+      "centre": [
+        106.98704950000001,
+        47.943962
+      ],
+      "created": "2020-10-13T02:06:04.665000Z",
+      "status": "ARCHIVED",
+      "countries": [
+        "Mongolia"
+      ],
+      "organisation": "Public Lab Mongolia",
+      "campaigns": [
+        "#GISDay",
+        "OSMGeoWeek"
+      ],
+      "mappingTypes": [
+        "ROADS",
+        "BUILDINGS",
+        "WATERWAYS",
+        "LAND_USE",
+        "OTHER"
+      ],
+      "percentMapped": 96,
+      "percentValidated": 5,
+      "changesetComment": "#hotosm-project-9560 #PublicLabMongolia #covid19 #MapGive #OSM #ZuunModTuv #YouthMappers #NEMA #MULS #HOTmicrograntcovid19 #NUM #MGA",
+      "metadataAt": "2021-03-04T07:47:23Z"
     },
     {
       "id": 7889,
