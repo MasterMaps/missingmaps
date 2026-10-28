@@ -1,7 +1,7 @@
 {
   "hashtag": "iugnorge",
-  "generated": "2026-10-28T06:31:56.680Z",
-  "lastSequence": 7244459,
+  "generated": "2026-10-28T12:29:17.007Z",
+  "lastSequence": 7244806,
   "mappers": [
     "Heidi Bergfald",
     "mnsbdy",
@@ -388,252 +388,31 @@
   ],
   "projects": [
     {
-      "id": 57855,
-      "source": "changesets",
-      "changesets": [
-        189735433,
-        189735929,
-        189736031,
-        189736063,
-        189735258,
-        189736829,
-        189736780,
-        189735652,
-        189737041,
-        189737204,
-        189735723,
-        189737556,
-        189737651,
-        189737664,
-        189738118,
-        189738275,
-        189737463,
-        189737843,
-        189737869,
-        189739021,
-        189738856,
-        189738815,
-        189736429,
-        191124112,
-        191124261
-      ],
-      "mappers": [
-        "hiloman",
-        "B Prane",
-        "Benny Kv",
-        "Stephan Niderehe"
-      ],
-      "firstEdit": "2026-09-29T15:45:54Z",
-      "lastEdit": "2026-10-27T22:40:08Z",
-      "editPoints": [
-        [
-          8.2755,
-          12.0435
-        ],
-        [
-          8.3201,
-          12.0994
-        ],
-        [
-          8.3203,
-          12.0987
-        ],
-        [
-          8.2418,
-          12.1472
-        ],
-        [
-          8.2754,
-          12.0459
-        ],
-        [
-          8.3164,
-          12.101
-        ],
-        [
-          8.2488,
-          12.1424
-        ],
-        [
-          8.283,
-          12.044
-        ],
-        [
-          8.3158,
-          12.1013
-        ],
-        [
-          8.1377,
-          12.238
-        ],
-        [
-          8.1674,
-          12.2691
-        ],
-        [
-          8.1378,
-          12.2374
-        ],
-        [
-          8.3154,
-          12.0994
-        ],
-        [
-          8.138,
-          12.2373
-        ],
-        [
-          8.2603,
-          12.0208
-        ],
-        [
-          8.3175,
-          12.1003
-        ],
-        [
-          8.1375,
-          12.2375
-        ],
-        [
-          8.3157,
-          12.0986
-        ],
-        [
-          8.1672,
-          12.2689
-        ],
-        [
-          8.2601,
-          12.0217
-        ],
-        [
-          8.1675,
-          12.269
-        ],
-        [
-          8.1672,
-          12.269
-        ],
-        [
-          2.7597,
-          10.8488
-        ],
-        [
-          2.7612,
-          10.8473
-        ]
-      ],
-      "editBbox": [
-        2.7595869,
-        10.8450569,
-        8.3204843,
-        12.2699305
-      ],
-      "name": "Missing Maps: Buildings in Kano, Nigeria (1)",
-      "shortDescription": "MSF has been running activities in Kano for a few years. Amongst these activities have been nutrition, Outpatient Department, maternal health and many others. We have also provided support in the form of emergency intervention (e.g., Diphtheria, Lassa, etc). Help us improve the geographical data for better support to operational activities. Read here for more information about MSF activities in Ni",
-      "bbox": [
-        8.081818,
-        11.953349,
-        8.375702,
-        12.271573
-      ],
-      "centre": [
-        8.228760000000001,
-        12.112461
-      ],
-      "created": "2026-07-15T12:12:49.292000Z",
-      "status": "PUBLISHED",
-      "countries": [
-        "Nigeria"
-      ],
-      "organisation": "Médecins Sans Frontières (MSF) ",
-      "campaigns": [
-        "Kano - Nigeria"
-      ],
-      "mappingTypes": [
-        "BUILDINGS"
-      ],
-      "percentMapped": 63,
-      "percentValidated": 63,
-      "changesetComment": "#hotosm-project-57855 Mapping of buildings in #Kano Nigeria for #missingmaps #msf",
-      "metadataAt": "2026-10-27T22:40:08Z"
-    },
-    {
-      "id": 25449,
-      "source": "changesets",
-      "changesets": [
-        191124112,
-        191124261
-      ],
-      "mappers": [
-        "Stephan Niderehe"
-      ],
-      "firstEdit": "2026-10-27T22:34:34Z",
-      "lastEdit": "2026-10-27T22:40:08Z",
-      "editPoints": [
-        [
-          2.7597,
-          10.8488
-        ],
-        [
-          2.7612,
-          10.8473
-        ]
-      ],
-      "editBbox": [
-        2.7595869,
-        10.8450569,
-        2.7627254,
-        10.8495065
-      ],
-      "name": "North-Central Benin (Departement Albori).  Mapathon Project: A Place for Africa / Black Academy (DE)",
-      "shortDescription": "The Black Academy, located in Mannheim, Germany has selected this area of north-central Benin, as a priority area for developing mapping skills among their staff",
-      "bbox": [
-        2.70564,
-        10.77109,
-        2.86357,
-        10.90714
-      ],
-      "centre": [
-        2.784605,
-        10.839115
-      ],
-      "created": "2025-07-17T16:50:50.176000Z",
-      "status": "PUBLISHED",
-      "countries": [
-        "Benin"
-      ],
-      "organisation": "German Red Cross",
-      "campaigns": [],
-      "mappingTypes": [
-        "BUILDINGS",
-        "ROADS"
-      ],
-      "percentMapped": 39,
-      "percentValidated": 18,
-      "changesetComment": "#hotosm-project-25449",
-      "metadataAt": "2026-10-27T22:40:08Z"
-    },
-    {
       "id": 68448,
       "source": "changesets",
       "changesets": [
-        191118984
+        191118984,
+        191139846
       ],
       "mappers": [
-        "HVaadal"
+        "HVaadal",
+        "Laneamedi"
       ],
       "firstEdit": "2026-10-27T19:59:55Z",
-      "lastEdit": "2026-10-27T19:59:55Z",
+      "lastEdit": "2026-10-28T10:02:14Z",
       "editPoints": [
         [
           32.4395,
           0.84
+        ],
+        [
+          32.2584,
+          0.5579
         ]
       ],
       "editBbox": [
-        32.4388609,
-        0.8392896,
+        32.2552205,
+        0.5531596,
         32.44023,
         0.8408099
       ],
@@ -664,7 +443,7 @@
       "percentMapped": 0,
       "percentValidated": 0,
       "changesetComment": "#hotosm-project-68448 #mapuganda #SpatialMappersUganda mapped roads and buildings",
-      "metadataAt": "2026-10-27T19:59:55Z"
+      "metadataAt": "2026-10-28T10:02:14Z"
     },
     {
       "id": 62541,
@@ -778,7 +557,8 @@
         190453250,
         190454671,
         190616342,
-        190616274
+        190616274,
+        191139330
       ],
       "mappers": [
         "HVaadal",
@@ -799,7 +579,7 @@
         "Laneamedi"
       ],
       "firstEdit": "2026-09-18T07:26:01Z",
-      "lastEdit": "2026-10-16T16:26:10Z",
+      "lastEdit": "2026-10-28T09:49:09Z",
       "editPoints": [
         [
           32.4513,
@@ -1236,6 +1016,10 @@
         [
           32.4378,
           15.6115
+        ],
+        [
+          32.4355,
+          15.5932
         ]
       ],
       "editBbox": [
@@ -1270,10 +1054,237 @@
         "BUILDINGS",
         "ROADS"
       ],
-      "percentMapped": 66,
-      "percentValidated": 39,
+      "percentMapped": 68,
+      "percentValidated": 47,
       "changesetComment": "#hotosm-project-62541 #omhesa, #2023sudanconflict #BLRFHASudan",
-      "metadataAt": "2026-10-16T16:26:10Z"
+      "metadataAt": "2026-10-28T09:49:09Z"
+    },
+    {
+      "id": 57855,
+      "source": "changesets",
+      "changesets": [
+        189735433,
+        189735929,
+        189736031,
+        189736063,
+        189735258,
+        189736829,
+        189736780,
+        189735652,
+        189737041,
+        189737204,
+        189735723,
+        189737556,
+        189737651,
+        189737664,
+        189738118,
+        189738275,
+        189737463,
+        189737843,
+        189737869,
+        189739021,
+        189738856,
+        189738815,
+        189736429,
+        191124112,
+        191124261
+      ],
+      "mappers": [
+        "hiloman",
+        "B Prane",
+        "Benny Kv",
+        "Stephan Niderehe"
+      ],
+      "firstEdit": "2026-09-29T15:45:54Z",
+      "lastEdit": "2026-10-27T22:40:08Z",
+      "editPoints": [
+        [
+          8.2755,
+          12.0435
+        ],
+        [
+          8.3201,
+          12.0994
+        ],
+        [
+          8.3203,
+          12.0987
+        ],
+        [
+          8.2418,
+          12.1472
+        ],
+        [
+          8.2754,
+          12.0459
+        ],
+        [
+          8.3164,
+          12.101
+        ],
+        [
+          8.2488,
+          12.1424
+        ],
+        [
+          8.283,
+          12.044
+        ],
+        [
+          8.3158,
+          12.1013
+        ],
+        [
+          8.1377,
+          12.238
+        ],
+        [
+          8.1674,
+          12.2691
+        ],
+        [
+          8.1378,
+          12.2374
+        ],
+        [
+          8.3154,
+          12.0994
+        ],
+        [
+          8.138,
+          12.2373
+        ],
+        [
+          8.2603,
+          12.0208
+        ],
+        [
+          8.3175,
+          12.1003
+        ],
+        [
+          8.1375,
+          12.2375
+        ],
+        [
+          8.3157,
+          12.0986
+        ],
+        [
+          8.1672,
+          12.2689
+        ],
+        [
+          8.2601,
+          12.0217
+        ],
+        [
+          8.1675,
+          12.269
+        ],
+        [
+          8.1672,
+          12.269
+        ],
+        [
+          2.7597,
+          10.8488
+        ],
+        [
+          2.7612,
+          10.8473
+        ]
+      ],
+      "editBbox": [
+        2.7595869,
+        10.8450569,
+        8.3204843,
+        12.2699305
+      ],
+      "name": "Missing Maps: Buildings in Kano, Nigeria (1)",
+      "shortDescription": "MSF has been running activities in Kano for a few years. Amongst these activities have been nutrition, Outpatient Department, maternal health and many others. We have also provided support in the form of emergency intervention (e.g., Diphtheria, Lassa, etc). Help us improve the geographical data for better support to operational activities. Read here for more information about MSF activities in Ni",
+      "bbox": [
+        8.081818,
+        11.953349,
+        8.375702,
+        12.271573
+      ],
+      "centre": [
+        8.228760000000001,
+        12.112461
+      ],
+      "created": "2026-07-15T12:12:49.292000Z",
+      "status": "PUBLISHED",
+      "countries": [
+        "Nigeria"
+      ],
+      "organisation": "Médecins Sans Frontières (MSF) ",
+      "campaigns": [
+        "Kano - Nigeria"
+      ],
+      "mappingTypes": [
+        "BUILDINGS"
+      ],
+      "percentMapped": 63,
+      "percentValidated": 63,
+      "changesetComment": "#hotosm-project-57855 Mapping of buildings in #Kano Nigeria for #missingmaps #msf",
+      "metadataAt": "2026-10-27T22:40:08Z"
+    },
+    {
+      "id": 25449,
+      "source": "changesets",
+      "changesets": [
+        191124112,
+        191124261
+      ],
+      "mappers": [
+        "Stephan Niderehe"
+      ],
+      "firstEdit": "2026-10-27T22:34:34Z",
+      "lastEdit": "2026-10-27T22:40:08Z",
+      "editPoints": [
+        [
+          2.7597,
+          10.8488
+        ],
+        [
+          2.7612,
+          10.8473
+        ]
+      ],
+      "editBbox": [
+        2.7595869,
+        10.8450569,
+        2.7627254,
+        10.8495065
+      ],
+      "name": "North-Central Benin (Departement Albori).  Mapathon Project: A Place for Africa / Black Academy (DE)",
+      "shortDescription": "The Black Academy, located in Mannheim, Germany has selected this area of north-central Benin, as a priority area for developing mapping skills among their staff",
+      "bbox": [
+        2.70564,
+        10.77109,
+        2.86357,
+        10.90714
+      ],
+      "centre": [
+        2.784605,
+        10.839115
+      ],
+      "created": "2025-07-17T16:50:50.176000Z",
+      "status": "PUBLISHED",
+      "countries": [
+        "Benin"
+      ],
+      "organisation": "German Red Cross",
+      "campaigns": [],
+      "mappingTypes": [
+        "BUILDINGS",
+        "ROADS"
+      ],
+      "percentMapped": 39,
+      "percentValidated": 18,
+      "changesetComment": "#hotosm-project-25449",
+      "metadataAt": "2026-10-27T22:40:08Z"
     },
     {
       "id": 67062,
