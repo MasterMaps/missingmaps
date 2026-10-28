@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-16T18:33:38.770Z",
+ "generated": "2026-10-28T00:47:57.367Z",
  "projects": {
   "521": {
    "features": 1,
@@ -256,6 +256,11 @@
    "squares": 0,
    "bbox": null
   },
+  "25449": {
+   "features": 0,
+   "squares": 0,
+   "bbox": null
+  },
   "27594": {
    "features": 22,
    "squares": 3,
@@ -457,13 +462,13 @@
    ]
   },
   "57855": {
-   "features": 199,
-   "squares": 11,
+   "features": 192,
+   "squares": 12,
    "bbox": [
     8.136777,
-    12.020313,
+    12.020309,
     8.320484,
-    12.269774
+    12.269485
    ]
   },
   "62541": {
@@ -497,6 +502,11 @@
    ]
   },
   "67062": {
+   "features": 0,
+   "squares": 0,
+   "bbox": null
+  },
+  "68448": {
    "features": 0,
    "squares": 0,
    "bbox": null
