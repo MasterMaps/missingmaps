@@ -1,7 +1,7 @@
 {
   "hashtag": "iugnorge",
-  "generated": "2026-10-28T18:25:38.455Z",
-  "lastSequence": 7245151,
+  "generated": "2026-10-29T00:45:24.034Z",
+  "lastSequence": 7245515,
   "mappers": [
     "Heidi Bergfald",
     "mnsbdy",
@@ -472,7 +472,8 @@
     "Sveinung Berg Olsen",
     "JorunY",
     "Signe Tangen",
-    "JuliaUlrika"
+    "JuliaUlrika",
+    "Olle Berggren"
   ],
   "projects": [
     {
@@ -1393,7 +1394,11 @@
         191156067,
         191156078,
         191156088,
-        191156091
+        191156091,
+        191162548,
+        191162956,
+        191162701,
+        191162316
       ],
       "mappers": [
         "HVaadal",
@@ -1503,10 +1508,11 @@
         "Sveinung Berg Olsen",
         "JorunY",
         "Signe Tangen",
-        "JuliaUlrika"
+        "JuliaUlrika",
+        "Olle Berggren"
       ],
       "firstEdit": "2026-10-27T19:59:55Z",
-      "lastEdit": "2026-10-28T18:08:15Z",
+      "lastEdit": "2026-10-28T18:49:45Z",
       "editPoints": [
         [
           32.4395,
@@ -5079,6 +5085,22 @@
         [
           32.3235,
           1.1951
+        ],
+        [
+          32.3052,
+          0.5852
+        ],
+        [
+          32.3058,
+          0.5837
+        ],
+        [
+          32.3015,
+          0.5875
+        ],
+        [
+          32.3052,
+          0.5899
         ]
       ],
       "editBbox": [
@@ -5114,7 +5136,7 @@
       "percentMapped": 26,
       "percentValidated": 0,
       "changesetComment": "#hotosm-project-68448 #mapuganda #SpatialMappersUganda mapped roads and buildings",
-      "metadataAt": "2026-10-28T18:08:15Z"
+      "metadataAt": "2026-10-28T18:49:45Z"
     },
     {
       "id": 68118,
