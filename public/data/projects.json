@@ -1,7 +1,7 @@
 {
   "hashtag": "iugnorge",
-  "generated": "2026-10-29T00:45:24.034Z",
-  "lastSequence": 7245515,
+  "generated": "2026-10-29T06:32:04.845Z",
+  "lastSequence": 7245840,
   "mappers": [
     "Heidi Bergfald",
     "mnsbdy",
@@ -1398,7 +1398,8 @@
         191162548,
         191162956,
         191162701,
-        191162316
+        191162316,
+        191177607
       ],
       "mappers": [
         "HVaadal",
@@ -1512,7 +1513,7 @@
         "Olle Berggren"
       ],
       "firstEdit": "2026-10-27T19:59:55Z",
-      "lastEdit": "2026-10-28T18:49:45Z",
+      "lastEdit": "2026-10-29T06:25:40Z",
       "editPoints": [
         [
           32.4395,
@@ -5101,6 +5102,10 @@
         [
           32.3052,
           0.5899
+        ],
+        [
+          32.2916,
+          0.543
         ]
       ],
       "editBbox": [
@@ -5136,7 +5141,7 @@
       "percentMapped": 26,
       "percentValidated": 0,
       "changesetComment": "#hotosm-project-68448 #mapuganda #SpatialMappersUganda mapped roads and buildings",
-      "metadataAt": "2026-10-28T18:49:45Z"
+      "metadataAt": "2026-10-29T06:25:40Z"
     },
     {
       "id": 68118,
