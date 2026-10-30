@@ -1,7 +1,7 @@
 {
   "hashtag": "iugnorge",
-  "generated": "2026-10-30T06:32:16.248Z",
-  "lastSequence": 7247218,
+  "generated": "2026-10-30T12:29:33.801Z",
+  "lastSequence": 7247566,
   "mappers": [
     "Heidi Bergfald",
     "mnsbdy",
@@ -478,6 +478,61 @@
     "Øystein Fidjestøl"
   ],
   "projects": [
+    {
+      "id": 67260,
+      "source": "changesets",
+      "changesets": [
+        191226638
+      ],
+      "mappers": [
+        "Laneamedi"
+      ],
+      "firstEdit": "2026-10-30T08:38:16Z",
+      "lastEdit": "2026-10-30T08:38:16Z",
+      "editPoints": [
+        [
+          -75.7083,
+          4.8153
+        ]
+      ],
+      "editBbox": [
+        -75.7083358,
+        4.8152226,
+        -75.7082505,
+        4.8152826
+      ],
+      "name": "Respuesta al terremoto de Colombia de 2026: Pereira - Risaralda (14)",
+      "shortDescription": "IMPORTANTE: LEE LAS INSTRUCCIONES ANTES DE MAPEAR. Este proyecto es diferente. El lunes 10 de agosto de 2026, Colombia fue sacudida por un potente terremoto de magnitud 7,4. El sismo causó una destrucción generalizada, y su epicentro se ubicó en San José del Palmar, al oeste de la capital, Bogotá. El temblor se sintió en varias ciudades de todo el país. Más de 300 personas perdieron la vida y much",
+      "bbox": [
+        -75.712093,
+        4.797069,
+        -75.680271,
+        4.822706
+      ],
+      "centre": [
+        -75.696182,
+        4.8098875
+      ],
+      "created": "2026-10-06T16:00:30.532000Z",
+      "status": "PUBLISHED",
+      "countries": [
+        "Colombia"
+      ],
+      "organisation": "Comunidad OSM Colombia",
+      "campaigns": [
+        "2026 Colombia Earthquake"
+      ],
+      "mappingTypes": [
+        "OTHER",
+        "WATERWAYS",
+        "BUILDINGS",
+        "ROADS"
+      ],
+      "percentMapped": 60,
+      "percentValidated": 4,
+      "changesetComment": "#hotosm-project-67260 #FlyNorth #AC3 #2026ColombiaEarthQuake-Palmar",
+      "metadataAt": "2026-10-30T08:38:16Z"
+    },
     {
       "id": 68448,
       "source": "changesets",
