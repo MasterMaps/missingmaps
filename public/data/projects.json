@@ -1,7 +1,7 @@
 {
   "hashtag": "iugnorge",
-  "generated": "2026-10-29T18:25:40.574Z",
-  "lastSequence": 7246514,
+  "generated": "2026-10-30T00:46:40.481Z",
+  "lastSequence": 7246881,
   "mappers": [
     "Heidi Bergfald",
     "mnsbdy",
@@ -1406,7 +1406,17 @@
         191202139,
         191202352,
         191202605,
-        191203331
+        191203331,
+        191210732,
+        191211027,
+        191212470,
+        191211545,
+        191213200,
+        191213524,
+        191213693,
+        191213869,
+        191214502,
+        191214612
       ],
       "mappers": [
         "HVaadal",
@@ -1522,7 +1532,7 @@
         "Øystein Fidjestøl"
       ],
       "firstEdit": "2026-10-27T19:59:55Z",
-      "lastEdit": "2026-10-29T16:56:49Z",
+      "lastEdit": "2026-10-29T22:21:09Z",
       "editPoints": [
         [
           32.4395,
@@ -5135,6 +5145,46 @@
         [
           32.3801,
           0.9518
+        ],
+        [
+          32.2707,
+          0.6966
+        ],
+        [
+          32.2724,
+          0.6963
+        ],
+        [
+          32.2613,
+          0.6872
+        ],
+        [
+          32.2613,
+          0.6837
+        ],
+        [
+          32.2618,
+          0.6881
+        ],
+        [
+          32.0856,
+          0.9721
+        ],
+        [
+          32.0869,
+          0.9851
+        ],
+        [
+          32.1079,
+          0.9803
+        ],
+        [
+          32.0957,
+          0.9947
+        ],
+        [
+          32.0986,
+          0.9898
         ]
       ],
       "editBbox": [
@@ -5167,10 +5217,10 @@
         "BUILDINGS",
         "WATERWAYS"
       ],
-      "percentMapped": 26,
+      "percentMapped": 27,
       "percentValidated": 0,
-      "changesetComment": "#hotosm-project-68448 #mapuganda #SpatialMappersUganda mapped roads and buildings",
-      "metadataAt": "2026-10-29T16:56:49Z"
+      "changesetComment": "#hotosm-project-68448 #mapuganda #SpatialMappersUganda #tt_event mapped roads and buildings",
+      "metadataAt": "2026-10-29T22:21:09Z"
     },
     {
       "id": 68118,
