@@ -1,7 +1,7 @@
 {
   "hashtag": "iugnorge",
-  "generated": "2026-11-01T18:19:31.287Z",
-  "lastSequence": 7250685,
+  "generated": "2026-11-02T00:40:55.885Z",
+  "lastSequence": 7251058,
   "mappers": [
     "Heidi Bergfald",
     "mnsbdy",
@@ -1419,7 +1419,14 @@
         191214612,
         191309402,
         191311162,
-        191311509
+        191311509,
+        191337560,
+        191337191,
+        191338681,
+        191341276,
+        191341657,
+        191342249,
+        191340168
       ],
       "mappers": [
         "HVaadal",
@@ -1535,7 +1542,7 @@
         "Øystein Fidjestøl"
       ],
       "firstEdit": "2026-10-27T19:59:55Z",
-      "lastEdit": "2026-11-01T10:27:48Z",
+      "lastEdit": "2026-11-01T22:59:50Z",
       "editPoints": [
         [
           32.4395,
@@ -5200,6 +5207,34 @@
         [
           32.3298,
           0.5713
+        ],
+        [
+          32.3402,
+          0.6125
+        ],
+        [
+          32.315,
+          0.5604
+        ],
+        [
+          32.3364,
+          0.6142
+        ],
+        [
+          32.3685,
+          0.671
+        ],
+        [
+          32.3676,
+          0.6759
+        ],
+        [
+          32.3668,
+          0.671
+        ],
+        [
+          32.4198,
+          0.6523
         ]
       ],
       "editBbox": [
@@ -5235,7 +5270,7 @@
       "percentMapped": 27,
       "percentValidated": 0,
       "changesetComment": "#hotosm-project-68448 #mapuganda #SpatialMappersUganda #tt_event mapped roads and buildings",
-      "metadataAt": "2026-11-01T10:27:48Z"
+      "metadataAt": "2026-11-01T22:59:50Z"
     },
     {
       "id": 62541,
