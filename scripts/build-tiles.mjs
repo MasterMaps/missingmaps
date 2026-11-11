@@ -141,11 +141,26 @@ async function slotWait(endpoint, round = 0) {
 
 const RETRYABLE = [429, 500, 502, 503, 504]
 
-async function overpass(data, label) {
+/**
+ * Endpoints whose data stopped updating, skipped for the rest of the run.
+ *
+ * A stale instance does not fail either. In November 2026 the French instance
+ * sat frozen at 23 October for weeks, answering every query promptly with HTTP
+ * 200 and the map as it was before our mapathons — so every project mapped
+ * since came out empty and fell off the app without a single error logged.
+ */
+const stale = new Set()
+
+/** `notBefore`: the newest edit the answer must already include. */
+async function overpass(data, label, notBefore) {
   let last = 'unknown'
   for (let attempt = 0; attempt <= MAX_ATTEMPTS * ENDPOINTS.length; attempt++) {
     const index = (preferred + attempt) % ENDPOINTS.length
     const endpoint = ENDPOINTS[index]
+    if (stale.has(endpoint)) {
+      if (stale.size === ENDPOINTS.length) throw new Error(`${label}: every Overpass instance is behind ${notBefore}`)
+      continue
+    }
     try {
       const res = await fetch(endpoint, {
         method: 'POST',
@@ -153,8 +168,15 @@ async function overpass(data, label) {
         body: new URLSearchParams({ data }),
       })
       if (res.ok) {
+        const body = await res.json()
+        const base = body.osm3s?.timestamp_osm_base
+        if (notBefore && base && new Date(base) < new Date(notBefore)) {
+          console.log(`    ${host(endpoint)} has data only up to ${base}, older than ${notBefore}; not using it`)
+          stale.add(endpoint)
+          continue
+        }
         preferred = index
-        return res.json()
+        return body
       }
       if (!RETRYABLE.includes(res.status)) throw new Error(`HTTP ${res.status} from ${host(endpoint)}`)
       last = `HTTP ${res.status} from ${host(endpoint)}`
@@ -183,8 +205,8 @@ async function overpass(data, label) {
  * how an earlier build undercounted by a factor of three while looking healthy.
  * So a remark means the box was too big: quarter it and ask again.
  */
-async function fetchArea(bbox, label, depth = 0) {
-  const body = await overpass(query(bbox), label)
+async function fetchArea(bbox, label, notBefore, depth = 0) {
+  const body = await overpass(query(bbox), label, notBefore)
   if (!body.remark) return body.elements || []
   if (depth >= 3) throw new Error(`${label}: ${body.remark}`)
 
@@ -199,7 +221,7 @@ async function fetchArea(bbox, label, depth = 0) {
     [w, midY, midX, n],
     [midX, midY, e, n],
   ]) {
-    elements.push(...(await fetchArea(quarter, label, depth + 1)))
+    elements.push(...(await fetchArea(quarter, label, notBefore, depth + 1)))
     await sleep(1000)
   }
   return elements
@@ -379,7 +401,7 @@ async function extract(project, label) {
 
   for (const [i, piece] of pieces.entries()) {
     const suffix = pieces.length > 1 ? ` [${i + 1}/${pieces.length}]` : ''
-    for (const el of await fetchArea(piece, `${label}${suffix}`)) {
+    for (const el of await fetchArea(piece, `${label}${suffix}`, project.lastEdit)) {
       if (el.type !== 'way' || !el.geometry || el.geometry.length < 2) continue
       if (!ourChangesets.has(el.changeset)) continue
       ours.set(el.id, el)
