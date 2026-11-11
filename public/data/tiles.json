@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-11T00:42:43.781Z",
+ "generated": "2026-11-11T23:55:51.553Z",
  "projects": {
   "521": {
    "features": 1,
@@ -256,11 +256,6 @@
    "squares": 0,
    "bbox": null
   },
-  "25449": {
-   "features": 0,
-   "squares": 0,
-   "bbox": null
-  },
   "27594": {
    "features": 22,
    "squares": 3,
@@ -441,11 +436,6 @@
     0.17483
    ]
   },
-  "41553": {
-   "features": 0,
-   "squares": 0,
-   "bbox": null
-  },
   "43962": {
    "features": 2304,
    "squares": 190,
@@ -464,26 +454,6 @@
     7.332479,
     4.215953,
     7.381445
-   ]
-  },
-  "57855": {
-   "features": 192,
-   "squares": 12,
-   "bbox": [
-    8.136777,
-    12.020309,
-    8.320484,
-    12.269485
-   ]
-  },
-  "62541": {
-   "features": 1343,
-   "squares": 93,
-   "bbox": [
-    32.404181,
-    15.545281,
-    32.468559,
-    15.613492
    ]
   },
   "63366": {
@@ -507,21 +477,6 @@
    ]
   },
   "67062": {
-   "features": 0,
-   "squares": 0,
-   "bbox": null
-  },
-  "67260": {
-   "features": 0,
-   "squares": 0,
-   "bbox": null
-  },
-  "68118": {
-   "features": 0,
-   "squares": 0,
-   "bbox": null
-  },
-  "68448": {
    "features": 0,
    "squares": 0,
    "bbox": null
