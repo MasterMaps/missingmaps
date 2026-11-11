@@ -154,44 +154,45 @@ const stale = new Set()
 /** `notBefore`: the newest edit the answer must already include. */
 async function overpass(data, label, notBefore) {
   let last = 'unknown'
-  for (let attempt = 0; attempt <= MAX_ATTEMPTS * ENDPOINTS.length; attempt++) {
-    const index = (preferred + attempt) % ENDPOINTS.length
-    const endpoint = ENDPOINTS[index]
-    if (stale.has(endpoint)) {
-      if (stale.size === ENDPOINTS.length) throw new Error(`${label}: every Overpass instance is behind ${notBefore}`)
-      continue
-    }
-    try {
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'User-Agent': UA },
-        body: new URLSearchParams({ data }),
-      })
-      if (res.ok) {
-        const body = await res.json()
-        const base = body.osm3s?.timestamp_osm_base
-        if (notBefore && base && new Date(base) < new Date(notBefore)) {
-          console.log(`    ${host(endpoint)} has data only up to ${base}, older than ${notBefore}; not using it`)
-          stale.add(endpoint)
-          continue
+  for (let round = 0; round <= MAX_ATTEMPTS; round++) {
+    // Rounds are over the live endpoints only. Counting a stale one as an
+    // attempt once let the loop hammer the other without ever pausing, until
+    // overpass-api.de stopped accepting connections from the runner.
+    const live = ENDPOINTS.filter((e) => !stale.has(e))
+    // Whichever answered last goes first.
+    live.sort((a, b) => (b === ENDPOINTS[preferred]) - (a === ENDPOINTS[preferred]))
+    for (const endpoint of live) {
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'User-Agent': UA },
+          body: new URLSearchParams({ data }),
+        })
+        if (res.ok) {
+          const body = await res.json()
+          const base = body.osm3s?.timestamp_osm_base
+          if (notBefore && base && new Date(base) < new Date(notBefore)) {
+            console.log(`    ${host(endpoint)} has data only up to ${base}, older than ${notBefore}; not using it`)
+            stale.add(endpoint)
+            continue
+          }
+          preferred = ENDPOINTS.indexOf(endpoint)
+          return body
         }
-        preferred = index
-        return body
+        if (!RETRYABLE.includes(res.status)) throw new Error(`HTTP ${res.status} from ${host(endpoint)}`)
+        last = `HTTP ${res.status} from ${host(endpoint)}`
+      } catch (err) {
+        if (!/HTTP \d+/.test(err.message)) last = `${host(endpoint)}: ${err.message}`
+        else throw new Error(`${label}: ${err.message}`)
       }
-      if (!RETRYABLE.includes(res.status)) throw new Error(`HTTP ${res.status} from ${host(endpoint)}`)
-      last = `HTTP ${res.status} from ${host(endpoint)}`
-    } catch (err) {
-      if (!/HTTP \d+/.test(err.message)) last = `${host(endpoint)}: ${err.message}`
-      else throw new Error(`${label}: ${err.message}`)
     }
+    if (stale.size === ENDPOINTS.length) throw new Error(`${label}: every Overpass instance is behind ${notBefore}`)
 
     // Only sleep once every endpoint has refused this round.
-    if ((attempt + 1) % ENDPOINTS.length === 0) {
-      const round = Math.floor(attempt / ENDPOINTS.length)
-      const wait = await slotWait(endpoint, round)
-      console.log(`    no slot (${last}), waiting ${Math.round(wait / 1000)}s`)
-      await sleep(wait)
-    }
+    const endpoint = ENDPOINTS.find((e) => !stale.has(e))
+    const wait = await slotWait(endpoint, round)
+    console.log(`    no slot (${last}), waiting ${Math.round(wait / 1000)}s`)
+    await sleep(wait)
   }
   throw new Error(`${label}: ${last}`)
 }
@@ -450,7 +451,12 @@ for (const [index, project] of projects.entries()) {
       await writeFile(path, JSON.stringify(extracted))
     } catch (err) {
       console.warn(`  failed: ${err.message}`)
-      continue
+      process.exitCode = 1
+      // Out of date beats absent: dropping the project would take its work off
+      // the live map until the next good run.
+      extracted = await readFile(path, 'utf8').then(JSON.parse, () => null)
+      if (!extracted) continue
+      console.warn('  keeping the previous extract')
     }
   }
 
