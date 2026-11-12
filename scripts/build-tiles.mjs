@@ -402,11 +402,19 @@ async function extract(project, label) {
 
   for (const [i, piece] of pieces.entries()) {
     const suffix = pieces.length > 1 ? ` [${i + 1}/${pieces.length}]` : ''
-    for (const el of await fetchArea(piece, `${label}${suffix}`, project.lastEdit)) {
+    const started = Date.now()
+    const elements = await fetchArea(piece, `${label}${suffix}`, project.lastEdit)
+    let mine = 0
+    for (const el of elements) {
       if (el.type !== 'way' || !el.geometry || el.geometry.length < 2) continue
       if (!ourChangesets.has(el.changeset)) continue
       ours.set(el.id, el)
+      mine++
     }
+    // A successful query is otherwise silent, and a long run of them looks
+    // exactly like a hung one.
+    const seconds = Math.round((Date.now() - started) / 1000)
+    console.log(`    [${i + 1}/${pieces.length}] ${elements.length} ways, ${mine} ours, ${seconds}s`)
     await sleep(500) // one query at a time, with a pause, is a polite client.
   }
 
