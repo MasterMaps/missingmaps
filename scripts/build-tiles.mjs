@@ -37,7 +37,8 @@ import { fileURLToPath } from 'node:url'
 import { spawn } from 'node:child_process'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const DATA_FILE = resolve(ROOT, 'public/data/projects.json')
+/** The full project store, with the changeset ids the app never sees. */
+const DATA_FILE = resolve(ROOT, 'data/projects.json')
 /** What the app needs to know about the archive: counts and extents. */
 const SUMMARY_FILE = resolve(ROOT, 'public/data/tiles.json')
 

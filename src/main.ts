@@ -43,7 +43,7 @@ async function start() {
   // Count what is actually listed, not every project the ingest has ever seen —
   // otherwise the footer contradicts the dropdown.
   el('dataset-note').textContent =
-    `${withEdits(dataset.projects).length} projects · ${dataset.mappers.length} mappers · ` +
+    `${withEdits(dataset.projects).length} projects · ${dataset.mapperCount} mappers · ` +
     `updated ${new Date(dataset.generated).toLocaleDateString('en-GB', { dateStyle: 'medium' })}`
 
   const everywhere = document.createElement('option')
@@ -94,7 +94,7 @@ async function start() {
  */
 const withEdits = (projects: Project[]) =>
   projects
-    .filter((p) => p.changesets.length)
+    .filter((p) => p.changesetCount)
     .filter((p) => !Object.keys(summary).length || (summary[p.id]?.features ?? 0) >= MIN_FEATURES)
     .sort((a, b) => (b.lastEdit ?? '').localeCompare(a.lastEdit ?? ''))
 
@@ -157,7 +157,7 @@ function frame(project: Project) {
 function renderInfo(project: Project | undefined) {
   if (!project) {
     const totals = withEdits(dataset.projects)
-    const changesets = totals.reduce((sum, p) => sum + p.changesets.length, 0)
+    const changesets = totals.reduce((sum, p) => sum + p.changesetCount, 0)
     const countries = new Set(totals.flatMap((p) => p.countries ?? []))
     infoEl.innerHTML = `
       <div><strong>Everywhere we have mapped</strong>
@@ -177,7 +177,7 @@ function renderInfo(project: Project | undefined) {
       <span class="muted">${bits.map(escapeHtml).join(' · ')}</span>
     </div>
     <div class="muted">
-      ${project.changesets.length} changesets by ${project.mappers.length} mappers ·
+      ${project.changesetCount} changesets by ${project.mapperCount} mappers ·
       <a href="https://tasks.hotosm.org/projects/${project.id}" target="_blank" rel="noreferrer">
         open in Tasking Manager
       </a>

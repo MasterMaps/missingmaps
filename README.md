@@ -38,8 +38,10 @@ field, which writes `hashtags` and leaves the comment alone. Anything that searc
 comments (OSMCha's `comment` filter included) therefore misses almost all of them, so the ingest
 reads the `hashtags` tag first. Both are matched case-insensitively: `#IUGNorge` counts too.
 
-[`scripts/ingest.mjs`](scripts/ingest.mjs) builds [`public/data/projects.json`](public/data/projects.json)
-from three sources:
+[`scripts/ingest.mjs`](scripts/ingest.mjs) builds [`data/projects.json`](data/projects.json) — every
+changeset id and centre, which the tile build needs and which grows with every changeset — and from
+it the slim [`public/data/projects.json`](public/data/projects.json) the app loads, with counts in
+place of lists. Only the slim one is published. The sources:
 
 | Mode          | Auth           | What it is good for                                                                                                                                                                                                                    |
 | ------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

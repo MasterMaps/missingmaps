@@ -47,7 +47,7 @@ jobs:
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add public/data/projects.json
+          git add data/projects.json public/data/projects.json
           git diff --cached --quiet && echo 'no new projects or changesets' && exit 0
           git commit -m 'data: refresh #iugnorge project list'
           git pull --rebase --autostash

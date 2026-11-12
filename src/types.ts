@@ -10,8 +10,6 @@ export interface Project {
   centre?: [number, number]
   /** Union of the #iugnorge changeset bounding boxes — where the group actually worked. */
   editBbox?: [number, number, number, number]
-  /** Centre point of every #iugnorge changeset, used to find the busiest neighbourhood. */
-  editPoints?: [number, number][]
   tmCentroid?: [number, number]
   /** When the project was published in the Tasking Manager. */
   created?: string
@@ -25,15 +23,14 @@ export interface Project {
   percentMapped?: number
   percentValidated?: number
   changesetComment?: string
-  mappers: string[]
-  changesets: number[]
+  mapperCount: number
+  changesetCount: number
 }
 
 export interface Dataset {
   hashtag: string
   generated: string
-  lastSequence: number | null
-  mappers: string[]
+  mapperCount: number
   projects: Project[]
 }
 

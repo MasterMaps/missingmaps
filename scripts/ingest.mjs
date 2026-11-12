@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
- * Builds public/data/projects.json — the list of HOT Tasking Manager projects
- * that changesets tagged #iugnorge have contributed to.
+ * Builds data/projects.json — the list of HOT Tasking Manager projects that
+ * changesets tagged #iugnorge have contributed to — and the slim copy of it the
+ * app loads, public/data/projects.json.
  *
  * Four ways in, all merged into the same file:
  *
@@ -37,7 +38,14 @@ import { Readable } from 'node:stream'
 import { StringDecoder } from 'node:string_decoder'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const DATA_FILE = resolve(ROOT, 'public/data/projects.json')
+/**
+ * The full store: every changeset id and centre, which the tile build needs to
+ * tell our ways from everyone else's. It grows with every changeset — about a
+ * hundred bytes each — so it stays out of public/ and is never published.
+ */
+const DATA_FILE = resolve(ROOT, 'data/projects.json')
+/** What the app loads. Counts instead of lists, so it stays the same size. */
+const PUBLIC_FILE = resolve(ROOT, 'public/data/projects.json')
 
 const HASHTAG = (process.env.HASHTAG || 'iugnorge').toLowerCase()
 const TM_API = 'https://tasking-manager-production-api.hotosm.org/api/v2'
@@ -78,7 +86,25 @@ async function saveStore(store) {
   const out = { ...store, generated: new Date().toISOString(), projects }
   await mkdir(dirname(DATA_FILE), { recursive: true })
   await writeFile(DATA_FILE, JSON.stringify(out, null, 2) + '\n')
+  await writeFile(PUBLIC_FILE, JSON.stringify(publicView(out)) + '\n')
   console.log(`\nwrote ${DATA_FILE} — ${projects.length} projects, ${store.mappers.length} mappers`)
+}
+
+/**
+ * The app shows how many changesets and mappers a project has, never which.
+ * The ingest's own bookkeeping (lastSequence) stays behind too.
+ */
+function publicView({ hashtag, generated, mappers, projects }) {
+  return {
+    hashtag,
+    generated,
+    mapperCount: mappers.length,
+    projects: projects.map(({ changesets, mappers, editPoints, ...rest }) => ({
+      ...rest,
+      changesetCount: changesets.length,
+      mapperCount: mappers.length,
+    })),
+  }
 }
 
 /** Projects that gained a changeset in this run — the tile build needs to know. */
