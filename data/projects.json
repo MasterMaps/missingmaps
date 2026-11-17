@@ -1,7 +1,7 @@
 {
   "hashtag": "iugnorge",
-  "generated": "2026-11-16T18:22:37.432Z",
-  "lastSequence": 7269864,
+  "generated": "2026-11-17T00:39:57.787Z",
+  "lastSequence": 7270224,
   "mappers": [
     "Heidi Bergfald",
     "mnsbdy",
@@ -1491,7 +1491,14 @@
         192005310,
         192005961,
         192006227,
-        192007627
+        192007627,
+        192049816,
+        192050999,
+        192051475,
+        192052472,
+        192052631,
+        192053067,
+        192053151
       ],
       "mappers": [
         "HVaadal",
@@ -1607,7 +1614,7 @@
         "Øystein Fidjestøl"
       ],
       "firstEdit": "2026-10-27T19:59:55Z",
-      "lastEdit": "2026-11-15T23:13:50Z",
+      "lastEdit": "2026-11-16T22:16:18Z",
       "editPoints": [
         [
           32.4395,
@@ -5524,6 +5531,34 @@
         [
           32.4094,
           0.8214
+        ],
+        [
+          32.4095,
+          0.8209
+        ],
+        [
+          32.3948,
+          0.8401
+        ],
+        [
+          32.4012,
+          0.8372
+        ],
+        [
+          32.3948,
+          0.8399
+        ],
+        [
+          32.3949,
+          0.8449
+        ],
+        [
+          32.3775,
+          0.8373
+        ],
+        [
+          32.3769,
+          0.8384
         ]
       ],
       "editBbox": [
@@ -5556,10 +5591,10 @@
         "BUILDINGS",
         "WATERWAYS"
       ],
-      "percentMapped": 28,
+      "percentMapped": 29,
       "percentValidated": 0,
       "changesetComment": "#hotosm-project-68448 #mapuganda #SpatialMappersUganda #tt_event mapped roads and buildings",
-      "metadataAt": "2026-11-15T23:13:50Z"
+      "metadataAt": "2026-11-16T22:16:18Z"
     },
     {
       "id": 62541,
