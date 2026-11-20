@@ -1,7 +1,7 @@
 {
   "hashtag": "iugnorge",
-  "generated": "2026-11-20T12:25:41.848Z",
-  "lastSequence": 7275092,
+  "generated": "2026-11-20T18:22:55.329Z",
+  "lastSequence": 7275433,
   "mappers": [
     "Heidi Bergfald",
     "mnsbdy",
@@ -622,7 +622,10 @@
         192217057,
         192219699,
         192220289,
-        192222203
+        192222203,
+        192229228,
+        192228545,
+        192238722
       ],
       "mappers": [
         "HVaadal",
@@ -643,7 +646,7 @@
         "Laneamedi"
       ],
       "firstEdit": "2026-09-18T07:26:01Z",
-      "lastEdit": "2026-11-20T11:31:04Z",
+      "lastEdit": "2026-11-20T17:50:53Z",
       "editPoints": [
         [
           32.4513,
@@ -1172,6 +1175,18 @@
         [
           32.4387,
           15.555
+        ],
+        [
+          32.4254,
+          15.5919
+        ],
+        [
+          32.4392,
+          15.551
+        ],
+        [
+          32.4411,
+          15.553
         ]
       ],
       "editBbox": [
@@ -1206,10 +1221,10 @@
         "BUILDINGS",
         "ROADS"
       ],
-      "percentMapped": 77,
+      "percentMapped": 78,
       "percentValidated": 59,
       "changesetComment": "#hotosm-project-62541 #omhesa, #2023sudanconflict #BLRFHASudan",
-      "metadataAt": "2026-11-20T11:31:04Z"
+      "metadataAt": "2026-11-20T17:50:53Z"
     },
     {
       "id": 68448,
